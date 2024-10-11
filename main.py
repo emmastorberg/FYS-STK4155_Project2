@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from GradientDescent import PlainFixed, PlainMomentum, StochasticFixed
+from GradientDescent import PlainFixed, StochasticFixed
 
 
 def main():
@@ -11,20 +11,19 @@ def main():
     y = 2*x
     X = np.c_[np.ones(n), x]
 
-    GD = PlainFixed(0.1, beta_len=2, max_iter=200, rng=rng)
-    gradient = lambda beta: (2.0/n)*X.T @ (X @ beta-y)
+    GD = PlainFixed(eta=0.2)
     GD.set_gradient(X, y)
     beta = GD.perform()
 
-    GDM = PlainMomentum(0.1, beta_len=2, max_iter=200,rng=rng)
+    GDM = PlainFixed(eta=0.2, delta_momentum=0.3)
     GDM.set_gradient(X, y)
     betam = GDM.perform()
 
-    SGD = StochasticFixed(0.1, beta_len=2, max_iter=200, rng=rng)
+    SGD = StochasticFixed(eta=0.2, t0=1, t1=10)
     SGD.set_gradient(X, y)
     betasgd = SGD.perform()
 
-    SGDM = StochasticFixed(0.1, beta_len=2, max_iter=200, rng=rng)
+    SGDM = StochasticFixed(eta=0.02, delta_momentum=0.3, t0=0.1, t1=1)
     SGDM.set_gradient(X, y)
     betasgdm = SGDM.perform()
 
@@ -43,7 +42,6 @@ def main():
     plt.plot(xnew, ypredict, "r-", label="GD")
     plt.plot(xnew, ypredict2, "b-", label="analytical")
     plt.plot(x, y ,'ro')
-    plt.axis([0,2.0,0, 15.0])
     plt.xlabel(r'$x$')
     plt.ylabel(r'$y$')
     plt.title(r'Gradient descent example')
