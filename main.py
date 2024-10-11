@@ -15,7 +15,6 @@ def main():
     gradient = lambda beta: (2.0/n)*X.T @ (X @ beta-y)
     GD.set_gradient(X, y)
     beta = GD.perform()
-    print(beta)
 
     GDM = PlainMomentum(0.1, beta_len=2, max_iter=200,rng=rng)
     GDM.set_gradient(X, y)
@@ -24,7 +23,10 @@ def main():
     SGD = StochasticFixed(0.1, beta_len=2, max_iter=200, rng=rng)
     SGD.set_gradient(X, y)
     betasgd = SGD.perform()
-    print(beta)
+
+    SGDM = StochasticFixed(0.1, beta_len=2, max_iter=200, rng=rng)
+    SGDM.set_gradient(X, y)
+    betasgdm = SGDM.perform()
 
     beta_linreg = np.linalg.pinv(X.T @ X) @ X.T @ y
 
@@ -33,7 +35,9 @@ def main():
     ypredictsgd = xbnew.dot(betasgd)
     ypredictm = xbnew.dot(betam)
     ypredict = xbnew.dot(beta)
+    ypredictsgdm = xbnew.dot(betasgdm)
     ypredict2 = xbnew.dot(beta_linreg)
+    plt.plot(xnew, ypredictsgdm, label="sgdm")
     plt.plot(xnew, ypredictsgd, label = "sgd")
     plt.plot(xnew, ypredictm, label="gdm")
     plt.plot(xnew, ypredict, "r-", label="GD")
