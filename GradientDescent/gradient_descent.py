@@ -1,8 +1,7 @@
 
 import numpy as np
 
-
-class GradientDescent:
+class GD:
     def __init__(self):
         self.gradient = None
         
@@ -14,3 +13,6 @@ class GradientDescent:
 
     def calculate_gradient(self):
         ...
+
+    def perform(self):
+        raise NotImplementedError

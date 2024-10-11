@@ -1,4 +1,4 @@
-import GradientDescent
+# import GradientDescent
 
-class PlainMomentum(GradientDescent):
-    ...
+# class PlainMomentum(GD):
+#     ...
