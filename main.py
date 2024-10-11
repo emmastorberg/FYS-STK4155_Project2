@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from GradientDescent import PlainFixed, PlainMomentum, StochasticFixed
+from GradientDescent import PlainFixed, PlainMomentum, StochasticFixed, StochasticMomentum
 
 
 def main():
@@ -24,9 +24,10 @@ def main():
     SGD.set_gradient(X, y)
     betasgd = SGD.perform()
 
-    SGDM = StochasticFixed(0.1, beta_len=2, max_iter=200, rng=rng)
+    SGDM = StochasticMomentum(0.1, beta_len=2, max_iter=200, rng=rng, solver = "ada")
     SGDM.set_gradient(X, y)
     betasgdm = SGDM.perform()
+
 
     beta_linreg = np.linalg.pinv(X.T @ X) @ X.T @ y
 
