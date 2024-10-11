@@ -4,7 +4,7 @@ from .gradient_descent import GD
 
 
 class PlainMomentum(GD):
-    def __init__(self, eta: float, beta_len: int, delta_momentum: float = 0.3, max_iter: int = 50, tol: float = 10e-8) -> None:
+    def __init__(self, eta: float, beta_len: int, delta_momentum: float = 0.3, max_iter: int = 50, tol: float = 10e-8, rng: np.random.default_rng = None) -> None:
         super().__init__()
         self.eta = eta      # something about eigenvalues here???
         self.max_iter = max_iter
@@ -12,7 +12,7 @@ class PlainMomentum(GD):
         self.tol = tol
         self.delta_momentum = delta_momentum
 
-    def perform(self, ) -> np.ndarray:
+    def perform(self) -> np.ndarray:
         """
         Performs the descent iteratively.
 
