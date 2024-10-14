@@ -46,4 +46,4 @@ class PlainFixed(GD):
             i += 1
         return self.beta
 
-# Changes: changed beta to global self variable
+# TODO: changed beta to global self variable, but we may need to change the different gradient calls to implement stochastic
