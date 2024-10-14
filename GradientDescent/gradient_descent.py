@@ -77,3 +77,6 @@ class GD(ABC):
         delta += self.delta_momentum * delta_0
         delta_0 = delta
         return delta, delta_0
+
+    def tune_learning_rate(self):
+        pass
