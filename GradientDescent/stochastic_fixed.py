@@ -7,6 +7,7 @@ class StochasticFixed(GD):
     def __init__(
             self, 
             eta: float = 0.01,
+            eta_tuner: str | None = None,
             delta_momentum: float | None = None,
             max_iter: int = 50,
             tol: float = 10e-8, 
@@ -16,7 +17,7 @@ class StochasticFixed(GD):
             t0: int = 5, 
             t1: int = 50
         ) -> None:
-        super().__init__(eta, delta_momentum, max_iter, tol, rng)
+        super().__init__(eta, eta_tuner, delta_momentum, max_iter, tol, rng)
 
         self.M = M
         self.num_epochs = num_epochs
