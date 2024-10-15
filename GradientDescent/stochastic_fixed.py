@@ -48,7 +48,7 @@ class StochasticFixed(GD):
                     delta = eta*self.gradient(beta, xk, yk)
                 if self.tune:
                     if self.eta_tuner == "adam":
-                        self.k = k
+                        self.t = k
                     delta = self.tune_learning_rate((beta, xk, yk))
                 if self.momentum:
                     delta, delta_0 = self.add_momentum(delta, delta_0)
