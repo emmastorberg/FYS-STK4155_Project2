@@ -44,7 +44,10 @@ class StochasticFixed(GD):
                 xk = self.X[k:k+self.M]
                 yk = self.y[k:k+self.M]
                 eta = self.learning_schedule(epoch*m + k)
-                delta = eta*self.gradient(beta, xk, yk)
+                if not self.tune:
+                    delta = eta*self.gradient(beta, xk, yk)
+                if self.tune:
+                    delta = self.tune_learning_rate((beta, xk, yk))
                 if self.momentum:
                     delta, delta_0 = self.add_momentum(delta, delta_0)
                 beta -= delta

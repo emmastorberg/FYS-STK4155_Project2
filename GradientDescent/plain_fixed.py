@@ -39,7 +39,7 @@ class PlainFixed(GD):
             if not self.tune:
                 delta = self.eta * self.gradient(self.beta)
             if self.tune:
-                delta = self.tune_learning_rate()
+                delta = self.tune_learning_rate(self.beta)
             if self.momentum:
                 delta, delta_0 = self.add_momentum(delta, delta_0)
             self.beta -= delta

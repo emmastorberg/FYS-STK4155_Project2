@@ -31,27 +31,44 @@ def main():
     SGD.set_gradient(X, y)
     betasgd = SGD.perform()
 
+    SGDA = StochasticFixed(eta=0.2, eta_tuner="adagrad", t0=1, t1=10, rng=rng)
+    SGDA.set_gradient(X, y)
+    betasgda = SGDA.perform()
+
     SGDM = StochasticFixed(eta=0.02, delta_momentum=0.3, t0=0.1, t1=1, rng=rng)
     SGDM.set_gradient(X, y)
     betasgdm = SGDM.perform()
+
+    SGDMA = StochasticFixed(eta=0.2, eta_tuner="adagrad", delta_momentum=0.3, t0=1, t1=10, rng=rng)
+    SGDMA.set_gradient(X, y)
+    betasgdma = SGDMA.perform()
 
     beta_linreg = np.linalg.pinv(X.T @ X) @ X.T @ y
 
     xnew = np.array([[0],[2]])
     xbnew = np.c_[np.ones((2,1)), xnew]
-    ypredictsgd = xbnew.dot(betasgd)
+    
     ypredictm = xbnew.dot(betam)
     ypredict = xbnew.dot(beta)
     ypredictgda = xbnew.dot(betagda)
     ypredictgdma = xbnew.dot(betagdma)
+
+    ypredictsgd = xbnew.dot(betasgd)
+    ypredictsgda = xbnew.dot(betasgda)
     ypredictsgdm = xbnew.dot(betasgdm)
+    ypredictsgdma = xbnew.dot(betasgdma)
+    
     ypredict2 = xbnew.dot(beta_linreg)
-    #plt.plot(xnew, ypredictsgdm, label="sgdm")
-    #plt.plot(xnew, ypredictsgd, label = "sgd")
-    plt.plot(xnew, ypredictm, label="gdm")
-    plt.plot(xnew, ypredict, "r-", label="GD")
-    plt.plot(xnew, ypredictgda, "c-", label="GD with adagrad")
-    plt.plot(xnew, ypredictgdma, "d-", label="GD with adagrad and moment")
+    #plt.plot(xnew, ypredictm, label="gdm")
+    #plt.plot(xnew, ypredict, "r-", label="GD")
+    #plt.plot(xnew, ypredictgda, "c-", label="GD with adagrad")
+    #plt.plot(xnew, ypredictgdma, "d-", label="GD with adagrad and moment")
+
+    plt.plot(xnew, ypredictsgd, label = "sgd")
+    plt.plot(xnew, ypredictsgdm, label="sgdm")
+    plt.plot(xnew, ypredictsgda, "c-", label="SGD with tuner")
+    plt.plot(xnew, ypredictsgdma, "d-", label="SGD with tuner and moment")
+
     #plt.plot(xnew, ypredict2, "b-", label="analytical")
     plt.plot(x, y ,'ro')
     plt.xlabel(r'$x$')

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Tuple
 
 import numpy as np
 
@@ -89,12 +90,12 @@ class GD(ABC):
         delta_0 = delta
         return delta, delta_0
 
-    def tune_learning_rate(self):
-         #acc_gradient = jnp.zeros_like(beta)  # Initialize the gradient accumulator, not sure if shape is correct, Morten uses just a number zero? 
+    def tune_learning_rate(self, grad_arg: np.ndarray | Tuple[np.ndarray]):
+        #acc_gradient = jnp.zeros_like(beta)  # Initialize the gradient accumulator, not sure if shape is correct, Morten uses just a number zero? 
         if self.eta_tuner == "adagrad":
                     #self.beta = jnp.float64(beta) 
-                    self.acc_gradient += self.gradient(self.beta)**2
-                    delta = self.eta*self.gradient(self.beta)/(np.sqrt(self.acc_gradient) + self.small_val) # jnp.sqrt()
+                    self.acc_gradient += self.gradient(grad_arg)**2
+                    delta = self.eta*self.gradient(grad_arg)/(np.sqrt(self.acc_gradient) + self.small_val) # jnp.sqrt()
         return delta 
 
      
