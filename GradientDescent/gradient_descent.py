@@ -42,12 +42,16 @@ class GD(ABC):
             self.small_val = 1e-8
             self.acc_gradient = 0
             
+            
             if eta_tuner == "rmsprop":
                  self.rho = 0.99
 
             if eta_tuner == "adam":
                  self.beta1 = 0.9
                  self.beta2 = 0.999
+                 self.t = 1
+                 self.first_moment = 0
+                 self.second_moment = 0
         
         if delta_momentum is None:
             self.momentum = False
@@ -55,7 +59,6 @@ class GD(ABC):
             self.momentum = True
 
         self.gradient = None
-        self.beta = None
         self.cost = None
         self.X = None
         self.y = None
@@ -91,69 +94,20 @@ class GD(ABC):
         return delta, delta_0
 
     def tune_learning_rate(self, grad_arg: np.ndarray | Tuple[np.ndarray]):
-        #acc_gradient = jnp.zeros_like(beta)  # Initialize the gradient accumulator, not sure if shape is correct, Morten uses just a number zero? 
         if self.eta_tuner == "adagrad":
-                    #self.beta = jnp.float64(beta) 
                     self.acc_gradient += self.gradient(grad_arg)**2
                     delta = self.eta*self.gradient(grad_arg)/(np.sqrt(self.acc_gradient) + self.small_val) # jnp.sqrt()
+
+        elif self.eta_tuner == "rmsprop":
+                    self.acc_gradient = (self.rho*self.acc_gradient + (1-self.rho)*self.gradient(grad_arg)**2)
+                    delta = self.eta*self.gradient(grad_arg)/ (np.sqrt(self.acc_gradient)+self.small_val) #jnp.sqrt
+
+        elif self.eta_tuner == "adam":
+                    self.first_moment = self.beta1*self.first_moment + (1-self.beta1)*self.gradient(grad_arg)
+                    self.second_moment = self.beta2*self.second_moment+(1-self.beta2)*self.gradient(grad_arg)**2
+                    first_term = self.first_moment/(1.0-self.beta1**self.t)   # should plain also be updated like this?
+                    second_term = self.second_moment/(1.0-self.beta2**self.t)  #K
+
+                    delta = self.eta*first_term/(np.sqrt(second_term)+self.small_val) #jnp.sqrt
+
         return delta 
-
-     
-"""
-def perform(self) -> np.ndarray:
-        m = int(self.n/self.M) # number of minibatches 
-        beta = np.random.randn(self.beta_len)
-        change = 0.0
-
-        # For adaptible learning rate
-        small_val = 1e-8
-        acc_gradient= 0 #jnp.zeros_like(beta)  # Initialize the gradient accumulator, not sure if shape is correct Morten uses just a number? 
-
-        # For rmsprop
-        rho = 0.99
-
-        # For adam
-        beta1 = 0.9
-        beta2 = 0.999
-
-        for epoch in range(self.n_epochs):
-            m_range = np.arange(0, m-1)
-            self.rng.shuffle(m_range)
-
-            for k in m_range:
-                xk = self.X[k:k+self.M]
-                yk = self.y[k:k+self.M]
-                eta = self.learning_schedule(epoch*m+k) # or self.eta
-
-                if self.solver == "analytical":
-                    new_change = eta*self.gradient(beta, xk, yk) + self.delta_momentum*change
-
-                if self.solver == "ada":
-                    self.beta = jnp.float64(beta)
-                    acc_gradient += self.gradient(beta, xk, yk)**2
-                    new_change = eta*self.gradient(beta, xk, yk)/(jnp.sqrt(acc_gradient) + small_val) + self.delta_momentum*change # Plus moment?
-                
-                elif self.solver == "rmsprop":
-                    # Scaling with rho the new and the previous results
-                    acc_gradient = (rho*acc_gradient + (1-rho)*self.gradient**2)
-                    new_change = eta*self.gradient/ (jnp.sqrt(acc_gradient)+small_val) #same as for ada but different acc gradient, + Plus moment?
-
-                elif self.solver == "adam":
-                    # Computing moments first
-                    
-                    first_moment = beta1*first_moment + (1-beta1)*self.gradient
-                    second_moment = beta2*second_moment+(1-beta2)*self.gradient**2
-                    first_term = first_moment/(1.0-beta1**k)
-                    second_term = second_moment/(1.0-beta2**k)
-
-                    # Scaling with rho the new and the previous results
-                    new_change = eta*first_term/(jnp.sqrt(second_term)+small_val) + self.delta_momentum*change #Plus moment
-
-                beta -= new_change
-                change = new_change  #Only for analytical this has purpose
-        return beta
-
-    def learning_schedule(self, t: int) -> float:
-        return self.t0/(t+self.t1)
-
-"""

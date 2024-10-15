@@ -15,7 +15,7 @@ def main():
     GD.set_gradient(X, y)
     beta = GD.perform()
 
-    GDA = PlainFixed(eta=0.2, eta_tuner="adagrad", rng=rng)
+    GDA = PlainFixed(eta=0.2, eta_tuner="adam", rng=rng)
     GDA.set_gradient(X, y)
     betagda = GD.perform()
 
@@ -23,7 +23,7 @@ def main():
     GDM.set_gradient(X, y)
     betam = GDM.perform()
 
-    GDMA = PlainFixed(eta=0.2, eta_tuner="adagrad",delta_momentum=0.3, rng=rng)
+    GDMA = PlainFixed(eta=0.2, eta_tuner="adam",delta_momentum=0.3, rng=rng)
     GDMA.set_gradient(X, y)
     betagdma = GDMA.perform()
 
@@ -31,7 +31,7 @@ def main():
     SGD.set_gradient(X, y)
     betasgd = SGD.perform()
 
-    SGDA = StochasticFixed(eta=0.2, eta_tuner="adagrad", t0=1, t1=10, rng=rng)
+    SGDA = StochasticFixed(eta=0.2, eta_tuner="adam", t0=1, t1=10, rng=rng)
     SGDA.set_gradient(X, y)
     betasgda = SGDA.perform()
 
@@ -39,7 +39,7 @@ def main():
     SGDM.set_gradient(X, y)
     betasgdm = SGDM.perform()
 
-    SGDMA = StochasticFixed(eta=0.2, eta_tuner="adagrad", delta_momentum=0.3, t0=1, t1=10, rng=rng)
+    SGDMA = StochasticFixed(eta=0.2, eta_tuner="adam", delta_momentum=0.3, t0=1, t1=10, rng=rng)
     SGDMA.set_gradient(X, y)
     betasgdma = SGDMA.perform()
 
