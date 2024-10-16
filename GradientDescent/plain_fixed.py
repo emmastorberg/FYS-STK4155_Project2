@@ -32,20 +32,24 @@ class PlainFixed(GD):
             (np.ndarray): beta.
         """
         cost = 10
-        self.beta = self.rng.random(self.X_num_cols)
+        beta = self.rng.random(self.X_num_cols)
         i = 0
         delta_0 = 0.0
+
         while (cost > self.tol) and (i < self.max_iter):
+            i += 1
             if not self.tune:
-                delta = self.eta * self.gradient(self.beta)
+                delta = self.eta * self.gradient(beta)
             if self.tune:
                 if self.eta_tuner == "adam":
-                    self.t = i
-                delta = self.tune_learning_rate(self.beta)
+                    print("i is", i)
+                    self.t = i 
+                gradient = self.gradient(beta)
+                delta = self.tune_learning_rate(gradient)
             if self.momentum:
                 delta, delta_0 = self.add_momentum(delta, delta_0)
-            self.beta -= delta
-            i += 1
-        return self.beta
+            beta -= delta
+            
+        return beta
 
 # TODO: changed beta to global self variable, but we may need to change the different gradient calls to implement stochastic
