@@ -107,7 +107,7 @@ class GD(ABC):
                     self.second_moment = self.beta2*self.second_moment+(1-self.beta2)*self.gradient(grad_arg)**2
                     first_term = self.first_moment/(1.0-self.beta1**self.t)   # should plain also be updated like this?
                     second_term = self.second_moment/(1.0-self.beta2**self.t)  #not sure about value of t, depends on plain or stochastic?
-
+                    print("self.t is ", self.t)
                     delta = self.eta*first_term/(np.sqrt(second_term)+self.small_val) #jnp.sqrt
 
         return delta 

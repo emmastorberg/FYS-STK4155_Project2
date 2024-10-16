@@ -23,21 +23,26 @@ def main():
     GDM.set_gradient(X, y)
     betam = GDM.perform()
 
-    GDMA = PlainFixed(eta=0.2, eta_tuner="adam",delta_momentum=0.3, rng=rng)
-    GDMA.set_gradient(X, y)
-    betagdma = GDMA.perform()
+    print("plain gd with adam and momentum")
 
-    SGD = StochasticFixed(eta=0.2, t0=1, t1=10, rng=rng)
-    SGD.set_gradient(X, y)
-    betasgd = SGD.perform()
+    # GDMA = PlainFixed(eta=0.2, eta_tuner="adam",delta_momentum=0.3, rng=rng)
+    # GDMA.set_gradient(X, y)
+    # betagdma = GDMA.perform()
 
-    SGDA = StochasticFixed(eta=0.2, eta_tuner="adam", t0=1, t1=10, rng=rng)
-    SGDA.set_gradient(X, y)
-    betasgda = SGDA.perform()
+    # SGD = StochasticFixed(eta=0.2, t0=1, t1=10, rng=rng)
+    # SGD.set_gradient(X, y)
+    # betasgd = SGD.perform()
 
-    SGDM = StochasticFixed(eta=0.02, delta_momentum=0.3, t0=0.1, t1=1, rng=rng)
-    SGDM.set_gradient(X, y)
-    betasgdm = SGDM.perform()
+    
+    # SGDA = StochasticFixed(eta=0.2, t0=1, t1=10, rng=rng)
+    # SGDA.set_gradient(X, y)
+    # betasgda = SGDA.perform()
+
+    # SGDM = StochasticFixed(eta=0.02, delta_momentum=0.3, t0=0.1, t1=1, rng=rng)
+    # SGDM.set_gradient(X, y)
+    # betasgdm = SGDM.perform()
+
+    print("stochastic with adam and momentum")
 
     SGDMA = StochasticFixed(eta=0.2, eta_tuner="adam", delta_momentum=0.3, t0=1, t1=10, rng=rng)
     SGDMA.set_gradient(X, y)
@@ -51,11 +56,11 @@ def main():
     ypredictm = xbnew.dot(betam)
     ypredict = xbnew.dot(beta)
     ypredictgda = xbnew.dot(betagda)
-    ypredictgdma = xbnew.dot(betagdma)
+    #ypredictgdma = xbnew.dot(betagdma)
 
-    ypredictsgd = xbnew.dot(betasgd)
-    ypredictsgda = xbnew.dot(betasgda)
-    ypredictsgdm = xbnew.dot(betasgdm)
+    # ypredictsgd = xbnew.dot(betasgd)
+    # ypredictsgda = xbnew.dot(betasgda)
+    # ypredictsgdm = xbnew.dot(betasgdm)
     ypredictsgdma = xbnew.dot(betasgdma)
     
     ypredict2 = xbnew.dot(beta_linreg)
@@ -64,9 +69,9 @@ def main():
     #plt.plot(xnew, ypredictgda, "c-", label="GD with adagrad")
     #plt.plot(xnew, ypredictgdma, "d-", label="GD with adagrad and moment")
 
-    plt.plot(xnew, ypredictsgd, label = "sgd")
-    plt.plot(xnew, ypredictsgdm, label="sgdm")
-    plt.plot(xnew, ypredictsgda, "c-", label="SGD with tuner")
+    # plt.plot(xnew, ypredictsgd, label = "sgd")
+    # plt.plot(xnew, ypredictsgdm, label="sgdm")
+    # plt.plot(xnew, ypredictsgda, "c-", label="SGD with tuner")
     plt.plot(xnew, ypredictsgdma, "d-", label="SGD with tuner and moment")
 
     #plt.plot(xnew, ypredict2, "b-", label="analytical")

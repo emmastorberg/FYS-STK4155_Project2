@@ -34,23 +34,30 @@ class StochasticFixed(GD):
         return self.t0/(t+self.t1)
     
     def perform(self) -> np.ndarray:
-        m = int(self.X_num_cols/self.M)
+        m = int(self.X_num_rows/self.M)
+        print("m", m)
         beta = self.rng.random(self.X_num_cols)
         delta_0 = 0.0
         for epoch in range(self.num_epochs):
             m_range = np.arange(0, m - 1)
+            #print("before shuffle", m_range)
             self.rng.shuffle(m_range)
+            #print(m_range)
             for k in m_range:
+                #print(k)
                 xk = self.X[k:k+self.M]
                 yk = self.y[k:k+self.M]
                 eta = self.learning_schedule(epoch*m + k)
                 if not self.tune:
                     delta = eta*self.gradient(beta, xk, yk)
                 if self.tune:
+                    print(self.tune)
                     if self.eta_tuner == "adam":
+                        print("here again")
                         self.t = k
                     delta = self.tune_learning_rate((beta, xk, yk))
                 if self.momentum:
+                    print("momentum")
                     delta, delta_0 = self.add_momentum(delta, delta_0)
                 beta -= delta
         return beta
