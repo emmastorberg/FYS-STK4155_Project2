@@ -3,8 +3,11 @@ import pytest # type: ignore
 import numpy as np
 from sklearn.linear_model import SGDRegressor # type: ignore
 
-from GradientDescent import PlainFixed, PlainMomentum
+from GradientDescent import Plain, Stochastic
 
+
+def test_simple_test():
+    assert 1 + 1 == 2
 
 # def test_plain_fixed_perform() -> None:
 #     """
