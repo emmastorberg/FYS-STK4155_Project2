@@ -3,7 +3,7 @@ import numpy as np
 from .gradient_descent import GD
 
 
-class StochasticFixed(GD):
+class Stochastic(GD):
     def __init__(
             self, 
             eta: float = 0.01,
