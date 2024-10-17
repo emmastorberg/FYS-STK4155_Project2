@@ -1,5 +1,3 @@
 from .gradient_descent import GD
-from .plain_fixed import PlainFixed
-# from .plain_momentum import PlainMomentum
-from .stochastic_fixed import StochasticFixed
-# from .stochastic_momentum import StochasticMomentum
+from .plain import Plain
+from .stochastic import Stochastic

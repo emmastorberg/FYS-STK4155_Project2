@@ -49,7 +49,7 @@ class GD(ABC):
             if eta_tuner == "adam":
                  self.beta1 = 0.9
                  self.beta2 = 0.999
-                 self.t = 1
+                 self.t = 0
                  self.first_moment = 0
                  self.second_moment = 0
         
@@ -93,21 +93,20 @@ class GD(ABC):
         delta_0 = delta
         return delta, delta_0
 
-    def tune_learning_rate(self, grad_arg: np.ndarray | Tuple[np.ndarray]):
+    def tune_learning_rate(self, gradient) -> np.ndarray: # np.ndarray | Tuple[np.ndarray]):
         if self.eta_tuner == "adagrad":
-                    self.acc_gradient += self.gradient(grad_arg)**2
-                    delta = self.eta*self.gradient(grad_arg)/(np.sqrt(self.acc_gradient) + self.small_val) # jnp.sqrt()
+            self.acc_gradient += gradient**2
+            delta = self.eta*gradient/(np.sqrt(self.acc_gradient) + self.small_val) # jnp.sqrt()
 
         elif self.eta_tuner == "rmsprop":
-                    self.acc_gradient = (self.rho*self.acc_gradient + (1-self.rho)*self.gradient(grad_arg)**2)
-                    delta = self.eta*self.gradient(grad_arg)/ (np.sqrt(self.acc_gradient)+self.small_val) #jnp.sqrt
+            self.acc_gradient = (self.rho*self.acc_gradient + (1-self.rho)*gradient**2)
+            delta = self.eta*gradient/ (np.sqrt(self.acc_gradient)+self.small_val) #jnp.sqrt
 
         elif self.eta_tuner == "adam":
-                    self.first_moment = self.beta1*self.first_moment + (1-self.beta1)*self.gradient(grad_arg)
-                    self.second_moment = self.beta2*self.second_moment+(1-self.beta2)*self.gradient(grad_arg)**2
-                    first_term = self.first_moment/(1.0-self.beta1**self.t)   # should plain also be updated like this?
-                    second_term = self.second_moment/(1.0-self.beta2**self.t)  #not sure about value of t, depends on plain or stochastic?
-                    print("self.t is ", self.t)
-                    delta = self.eta*first_term/(np.sqrt(second_term)+self.small_val) #jnp.sqrt
+            self.first_moment = self.beta1*self.first_moment + (1-self.beta1)*gradient
+            self.second_moment = self.beta2*self.second_moment+(1-self.beta2)*gradient**2
+            first_term = self.first_moment/(1.0-self.beta1**self.t)   # should plain also be updated like this?
+            second_term = self.second_moment/(1.0-self.beta2**self.t)  #not sure about value of t, depends on plain or stochastic?
+            delta = self.eta*first_term/(np.sqrt(second_term)+self.small_val) #jnp.sqrt
 
         return delta 
