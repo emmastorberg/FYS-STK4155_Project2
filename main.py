@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from GradientDescent import PlainFixed, StochasticFixed
+from GradientDescent import Plain, Stochastic
 
 
 def main():
@@ -23,7 +23,7 @@ def main():
     # GDM.set_gradient(X, y)
     # betam = GDM.perform()
 
-    GDMA = PlainFixed(eta=0.2, eta_tuner="adam",delta_momentum=0.3, rng=rng)
+    GDMA = Plain(eta=0.2, eta_tuner="adam",delta_momentum=0.3, rng=rng)
     GDMA.set_gradient(X, y)
     betagdma = GDMA.perform()
     print(betagdma)
@@ -42,7 +42,7 @@ def main():
     # betasgdm = SGDM.perform()
 
 
-    SGDMA = StochasticFixed(eta=0.2, eta_tuner="adam", delta_momentum=0.3, t0=1, t1=10, rng=rng)
+    SGDMA = Stochastic(eta=0.2, eta_tuner="adam", delta_momentum=0.3, t0=1, t1=10, rng=rng)
     SGDMA.set_gradient(X, y)
     betasgdma = SGDMA.perform()
     print("stochastic")

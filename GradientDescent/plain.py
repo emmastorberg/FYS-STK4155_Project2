@@ -34,21 +34,20 @@ class Plain(GD):
         cost = 10
         beta = self.rng.random(self.X_num_cols)
         i = 0
-        delta_0 = 0.0
+        step_0 = 0.0
 
         while (cost > self.tol) and (i < self.max_iter):
             i += 1
             if not self.tune:
-                delta = self.eta * self.gradient(beta)
+                step = self.eta * self.gradient(beta)
             if self.tune:
                 if self.eta_tuner == "adam":
-                    print("i is", i)
                     self.t = i 
                 gradient = self.gradient(beta)
-                delta = self.tune_learning_rate(gradient)
+                step = self.tune_learning_rate(gradient)
             if self.momentum:
-                delta, delta_0 = self.add_momentum(delta, delta_0)
-            beta -= delta
+                step, step_0 = self.add_momentum(step, step_0)
+            beta -= step
             
         return beta
 
