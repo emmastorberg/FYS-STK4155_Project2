@@ -1,0 +1,109 @@
+\subsection{Gradient Descent}
+In our previous report \cite{fysstkproject1}, we looked at elementary linear regression techniques applied to 2D datasets for prediction. The cost functions of the  methods used were largely used simply as a step in the derivation of analytical expression for optimal model parameters $\boldsymbol{\hat{\beta}}$.  This allows us to find $\boldsymbol{\hat{\beta}}$ explicitly and without iteration. In contrast, gradient descent methods are numerical methods that approximate the optimal model parameters by moving closer to them step by step. 
+
+The method for this first part of the experiment will be to use gradient descent methods for OLS and ridge regression. We have chosen this as an first test of our gradient descent implementation for a few reasons. 
+
+First, the analytical solutions for the optimal model parameters provide a great reference point for the performance of the numerical methods, which will be useful to assess before we continue. Additionally, due to the cost functions of OLS and ridge regression both being convex, we are in no danger of ending  up in local minima, which would prevent us from finding the optimal model parameters for which the cost function is minimized. 
+
+We are considering a few different types of gradient descent in this report.\\
+\textcolor{teal}{Plain vs stochastic\\
+Fixed vs with momentum\\
+Different types of stepping with Adagrad, RMSProp and Adam.\\
+Plain er en naturlig start. Enkleste mulige metode. Hvis du tenker på gradient descent er det dette. Vi kan risikere å møte på noen problemer. \\
+1. Det kan ta lang tid å regne ut, fordi vi tar bittesmå skritt i veldig flate og store områder, og 2. vi er veldig sensitive på hvor vi starter. Hvis vi starter i litt nedoverbakke mot et lokalt bunnpunkt havner vi der. \\
+Vi kan burke stokastiks også. Da intorudserer vi litt randomness, som gjør at vi kan komme ut av noen lokale minimumspunkt, pluss noen andre fordeler. Stokastisk introduseres via en sum (sjekk notater).\\
+La oss nå snakke om momentum, fordi til nå har vi bare sett på en fixed læringsrate. momnetum tar høyde for hvordan du har beveget deg tidligere. Hvis du er i et flatt og stort omrpde kan du bevege deg raskere, men hvis du er i et bratt og ruglete området kan du bevege deg med mer omhu for å få med flere nyanser. \\
+De tre andre metodene er en slags tilførsel til momentum, fordi momentum er ikke god nok. vi ønkser å dra det enda lenger. Vi bruker nå både første og andre momentum (kun en av disse har vært brukt til nå). Det er noen vanlige fysiske fenomener som vi utnytter her. Hvis du allerede har hatt litt fart, så tar du med deg den farten for å komme deg videre og ikke havne i lokale minimums- og sadelpunkter, pluss at det går raskere. \\
+Enten Adagrad eller Adam er ganske lik RMSPRop, med bare 1 endring så den blir annerledes, mens den andre av ADagrad og Adam henter det beste fra RMSProp og den andre og slår det sammen. }
+
+
+
+\subsection{Neural Networks}
+In the next stage of our experimentation, we wish to expand our implementation of gradient descent methods and use them in neural networks. A \emph{neural network} is a computational model inspired by the human brain, wherein data is processed through a series of nodes (or neurons) organized in layers. 
+
+The first of these layers is known as the \emph{input layer}, and it is here the initial data is received. The data will typically have a set of features that we wish to study the impact of, analogous to how we were previously interested in finding the impact of polynomial terms $x^n$ of various degrees when working with linear regression. Each feature of the input is given its own node in the input layer. Next come the hidden layers, which, importantly, perform non-linear transformations and computations on the input data. Finally, an output layer will produce the final output (or prediction) from the network, depending on the specific problem and how many parameters we wish to predict. In the linear regression case, we want the output layer to have the same size as the number of features, as we are interested in polynomial coefficients $\boldsymbol{\hat{\beta}}$ for predicting the output data. 
+
+Each node in a neural network performs a dot product of its input $\boldsymbol{x}$ with its associated weights $\boldsymbol{w}$, adds a bias $\boldsymbol{b}$, and applies some non-linear activation function $\alpha$. Mathematically, we express this as:
+\[ z = \sum_{i=1}^{n} w_i x_i + b \]
+\[ a = \alpha(z) \]
+such that $a$ is the output at that node. When we consider the operations done on an entire layer at once, we can instead consider a vector of nodes $\boldsymbol{a}$, a weight matrix $\mathbf{W}$ and a vector $\boldsymbol b$ containing the biases. Thus, we can express a layer $\boldsymbol a$ based on the outputs $\boldsymbol x$ of the previous layer through the following expression:
+\[\text{\textcolor{red}{output of full layer expression here}}\]
+For a specific output node $a_i$, the expression is given by:
+\[\text{\textcolor{red}{output of single node expression here}}\]
+Training the model, as well as using it to make predictions, involves two key concepts. The first of these is \emph{feeding forward}, also known as \emph{forward propagation}. This is the process of passing input data through all the layers of the network to obtain an output, using the weights, biases and activation functions as described above. The outputs of each layer are computed sequentially, starting from the input and ending at the output layer, feeding the input forward through each layer, hence the name. In short, forward propagation is the process by which the model returns an output.
+
+The expressions above also make clear the significance of having non-linear activation functions: Any linear operations applied as activation functions as we move from layer to layer would allow us to rearrange the expression such that we form a single weight matrix with a bias added –– effectively reducing the network to one layer. Only with non-linear activation functions can we take advantage of the sequential computation of the layers and the additional capabilities this grants the neural network in terms of computational power and pattern recognition.
+
+In this report, we are primarily considering three activation functions, namely sigmoid ($\sigma$), Rectified Linear Unit (ReLU) and softmax \textcolor{red}{(add sources for each of these here)}. They are defined as follows:
+\[\sigma(z) = \frac{1}{1 + e^{-z}}\]
+\[\text{ReLU}(z) = \max(0, z)\]
+\[\text{Softmax}(z) = \text{\textcolor{red}{softmax def here}}\]
+
+Up to this point, we have explored the inner structure of a neural network, and seen how an output can be produced through a series of both linear and non-linear operations. In practice, we typically initialize the weight matrices and bias vectors with random numbers (perhaps over some probability distribution) \textcolor{red}{(add source here)}. Although we can now see how the model can compute an output by feeding forward an input, we have no reason to think this prediction will be any good. To quantify this, we return to the concept of a cost function, which, as we know, measures how well the neural network's output matches the target values. We would like to minimize this value, and when we did linear regression, we did so by minimizing the cost for some choice of model parameters $\boldsymbol{\hat{\beta}}$. This time, we would like to minimize the cost as a function of the weights and biases $(\mathbf{W}, \boldsymbol b)$ instead. 
+
+\emph{Backpropagation} is the second algorithm used to train the model. Specifically, we backpropagate to minimize the cost function by adjusting the weights and biases of each layer. It works by calculating the gradient of the cost function with respect to each weight using the chain rule. Recall the expression for our output $a_2$ for a 2-layer neural network introduced earlier:
+\[\text{\textcolor{red}{(add a2 = alpha(W2x+b2...etc here)}}\]
+The gradient with respect to the weights of the second (outermost) layer $\mathbf W_2$ looks like this:
+\[\text{\textcolor{red}{(W2 gradient here)}}\]
+and the gradient of the weights of the first layer looks like this:
+\[\text{\textcolor{red}{(W1 gradient here)}}.\]
+One important observation here is that many of the factors used to find these gradients are reused in both calculations. 
+
+\textcolor{red}{(Explain backpropagation algorithm steps here.)}
+% Step 1: Calculate the error at the output layer.
+% Step 2: Propagate this error backward through the network, layer by layer, to compute gradients.
+% Step 3: Update the weights and biases using these gradients.
+% The weight update rule using gradient descent can be expressed as:
+% \[ w_{new} = w_{old} - \eta \frac{\partial L}{\partial w} \]
+% Where:
+% ( $w_{new}$ ) is the updated weight,
+% ( $w_{old}$ ) is the current weight,
+% ( $\eta$ ) is the learning rate,
+% ( $\frac{\partial L}{\partial w}$ ) is the gradient of the loss function with respect to the weight.\\
+% The training process involves iteratively performing forward propagation, computing the loss, backpropagating the error, and updating the weights. This process continues until the network's performance on a validation set meets a predefined criterion.
+
+\subsubsection{Implementation of Linear Regression Task}
+As discussed, following the tests of the gradient descent methods, we will train a network to do a linear regression task. In doing so, we will use the aforementioned forward- and backpropagation algorithms with a neural network initialized in the following way:
+
+\textcolor{red}{(Add listing describing neural network initialization for linear regression task.)}
+
+As we see in listing \textcolor{red}{(listing number here)} above, the linear regression task simply corresponds to a \textcolor{magenta}{single-layer neural network with only weights (all biases set to 0). This is because...} \textcolor{red}{(Double-check with Frida if this interpretation of the task is correct.)}
+
+\subsection{Classification Tasks}
+One task neural networks are typically good at is classification \textcolor{red}{(add source)}. By this, we mean a task in which data points need to be placed in discrete categories, such as the focus of this report, the Wisconsin Breast Cancer Dataset \textcolor{red}{(add source)}. Our task is therefore to process the patient data and classify each of the patients based on whether they have cancer or not. 
+
+Since we are now using our neural network for another type of task, some changes should be made to its implementation to reflect this. One difference is the output of the network and how we might interpret it. Compared to what we have seen previously, a more natural output structure is to have output nodes corresponding to each of the categories, and let each node return the probability of some input being identified as that category. The category associated with the highest probability will then be the classification of the data point input, thus categorizing the dataset. 
+
+Additionally, it may be best to use the sigmoid function $\sigma$ as the activation function for the final layer, as we would like to interpret the output of each node as a probability. The sigmoid function will only return values between 0 and 1, supporting this interpretation, with a value close to 1 meaning the associated category is a likely choice for the input, and values close to 0 meaning it is not. 
+
+Another change is the cost function itself. In the classification case, it makes more sense to consider something like \emph{cross-entropy} rather than the MSE. The expression for the cross-entropy is given below:
+\[ C(\boldsymbol y, \boldsymbol{\hat{y}}) = -\sum_{i} y_i \log(\hat{y}_i) \]
+where $\boldsymbol y$ is the true label of the data points (one-hot encoded) and $\boldsymbol{\hat{y}}$ is the output predicted by the model. Instead of \textcolor{red}{(insert difference here)} like the MSE, the cross-entropy \textcolor{red}{(explain distinction here)}. This works better for categorical data because \textcolor{red}{(add reason here).}
+
+\textcolor{red}{False positives, false negatives, confusion matrix introduced here?}
+
+\subsubsection{Logistic Regression}
+To test the fitness of our neural network, we will compare its classification to that of a \emph{logistic regression} model, which is given by the expression below.
+
+\textcolor{red}{(Add logistic regression expression here).}
+
+Logisitic regression is commonly used for determining a probability from 0 to 1 of some event occurring, but it can also be utilized for classification tasks with only two categories, where outputs close to 0 represent one option, and close to 1 represent the other. 
+
+% TEXT ALREADY ADDED:
+% Neural networks are computational models inspired by the human brain, designed to recognize patterns and solve complex problems. They consist of interconnected processing elements called neurons (or nodes), organized into layers. These networks can learn from data, making them powerful tools for tasks such as classification, regression, and clustering.\\
+% A neural network is typically composed of the following layers:
+% Input Layer: This layer receives the initial data. Each neuron in this layer corresponds to an attribute or feature in the input data.
+% Hidden Layers: These intermediate layers perform non-linear transformations and computations. They extract and hierarchically represent features from the input data. A network can have one or more hidden layers.
+% Output Layer: This layer produces the final output of the network. For classification tasks, it usually consists of neurons equal to the number of classes.\\
+% Each neuron in a neural network performs a dot product of its input with its associated weights, adds a bias, and applies an activation function. Mathematically, this can be expressed as:\[ z = \sum_{i=1}^{n} w_i x_i + b \]
+% \[ a = \sigma(z) \]
+% Where:
+% ( $x_i$ ) are the inputs,
+% ( $w_i$ ) are the corresponding weights,
+% ( $b$ ) is the bias,
+% ( $z$ ) is the weighted sum plus bias,
+% ( $\sigma$ ) is the activation function,
+% ( $a$ ) is the output of the neuron.\\
+% Forward propagation is the process of passing input data through the network to obtain an output. This involves computing the outputs of each layer sequentially, starting from the input layer and ending at the output layer.\\
+% The loss function measures how well the neural network's output matches the target values. 
+% Backpropagation is an algorithm used to minimize the loss function by adjusting the network's weights and biases. It calculates the gradient of the loss function with respect to each weight using the chain rule of calculus.
