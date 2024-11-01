@@ -1,86 +1,64 @@
-import numpy as np
+import autograd.numpy as np
 import matplotlib.pyplot as plt
+from autograd import grad
 
-from GradientDescent import PlainFixed, StochasticFixed
+from GradientDescent import Plain, Stochastic
+from neural_network import NeuralNetwork
+import utils
+from utils import sigmoid, sigmoid_der, mse, mse_der, softmax, softmax_der, ReLU, ReLU_der
 
 
 def main():
-    n = 100
-    rng = np.random.default_rng(10)
-    x = np.linspace(0, 1, n)
-    y = 2*x
-    X = np.c_[np.ones(n), x]
+    # gd interface
 
-    # GD = PlainFixed(eta=0.2, rng=rng)
-    # GD.set_gradient(X, y)
-    # beta = GD.perform()
+    # cost = mse # callable C(predict, target)
+    # cost_der = utils.analytic_grad_OLS # callable, for linear regression: cost_grad(X, y, beta): return lambda beta: {some expression here}
+    # optimizer = Stochastic(lr = 0.0001, n_epochs=10000, M=2, momentum=0.3) # should work with Stochastic as well
+    # x = np.random.randn(10)
+    # X = np.zeros((len(x), 3))
+    # X[:,0] = 1
+    # X[:,1] = x
+    # X[:,2] = x**2
 
-    # GDA = PlainFixed(eta=0.2, eta_tuner="rmsprop", rng=rng)
-    # GDA.set_gradient(X, y)
-    # betagda = GDA.perform()
-
-    # GDM = PlainFixed(eta=0.2, eta_tuner="adam", delta_momentum=0.3, rng=rng)
-    # GDM.set_gradient(X, y)
-    # betam = GDM.perform()
-
-    GDMA = PlainFixed(eta=0.2, eta_tuner="adam",delta_momentum=0.3, rng=rng)
-    GDMA.set_gradient(X, y)
-    betagdma = GDMA.perform()
-    print(betagdma)
-
-    # SGD = StochasticFixed(eta=0.2, t0=1, t1=10, rng=rng)
-    # SGD.set_gradient(X, y)
-    # betasgd = SGD.perform()
-
-    
-    # SGDA = StochasticFixed(eta=0.2, t0=1, t1=10, rng=rng)
-    # SGDA.set_gradient(X, y)
-    # betasgda = SGDA.perform()
-
-    # SGDM = StochasticFixed(eta=0.02, delta_momentum=0.3, t0=0.1, t1=1, rng=rng)
-    # SGDM.set_gradient(X, y)
-    # betasgdm = SGDM.perform()
+    # y = 3*x**2 + 2*x + 4
 
 
-    SGDMA = StochasticFixed(eta=0.2, eta_tuner="adam", delta_momentum=0.3, t0=1, t1=10, rng=rng)
-    SGDMA.set_gradient(X, y)
-    betasgdma = SGDMA.perform()
-    print("stochastic")
-    print(betasgdma)
+    # optimizer.set_gradient(cost_der)
+    # beta = [np.random.randn(3)]
+    # beta = optimizer.gradient_descent(X, beta, y)
+    # print(beta)
 
-    # beta_linreg = np.linalg.pinv(X.T @ X) @ X.T @ y
+    # nn interface
 
-    xnew = np.array([[0],[1]])
-    xbnew = np.c_[np.ones((2,1)), xnew]
-    
-    # ypredictm = xbnew.dot(betam)
-    # ypredict = xbnew.dot(beta)
-    # ypredictgda = xbnew.dot(betagda)
-    ypredictgdma = xbnew.dot(betagdma)
+    network_input_size = 4    # int
+    layer_output_sizes = [4, 8, 10, 3]  # ints of number of neurons per layer
+    activation_funcs = [sigmoid, sigmoid, sigmoid, softmax]    # callable per layer
+    activation_ders = [sigmoid_der, sigmoid_der, sigmoid_der, softmax_der]
+    cost_func = utils.cross_entropy
+    cost_der = utils.cross_entropy_der
+    optimizer = Stochastic(lr=0.001, M=150, t0=0.1, t1=1, n_epochs=10000)
+    # optimizer = Plain(lr = 0.001, max_iter=10000)
+    nn = NeuralNetwork(
+        network_input_size,
+        layer_output_sizes,
+        activation_funcs,
+        activation_ders,
+        cost_func,
+        cost_der,
+        optimizer,
+    )
 
-    # ypredictsgd = xbnew.dot(betasgd)
-    # ypredictsgda = xbnew.dot(betasgda)
-    # ypredictsgdm = xbnew.dot(betasgdm)
-    ypredictsgdma = xbnew.dot(betasgdma)
-    
-    # ypredict2 = xbnew.dot(beta_linreg)
-    #plt.plot(xnew, ypredictm, label="gdm")
-    #plt.plot(xnew, ypredict, "r-", label="GD")
-    #plt.plot(xnew, ypredictgda, "c-", label="GD with adagrad")
-    #plt.plot(xnew, ypredictgdma, "d-", label="GD with tuner and moment")
+    inputs, targets = utils.get_iris_data()
+    # inputs = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+    # targets = np.array([[0], [1], [1], [0]])
 
-    # plt.plot(xnew, ypredictsgd, label = "sgd")
-    # plt.plot(xnew, ypredictsgdm, label="sgdm")
-    # plt.plot(xnew, ypredictsgda, "c-", label="SGD with tuner")
-    plt.plot(xnew, ypredictsgdma, "d-", label="SGD with tuner and moment")
-
-    #plt.plot(xnew, ypredict2, "b-", label="analytical")
-    plt.plot(x, y ,'ro')
-    plt.xlabel(r'$x$')
-    plt.ylabel(r'$y$')
-    plt.title(r'Gradient descent example')
-    plt.legend()
-    plt.show()
+    nn.train(inputs, targets)
+    prediction = nn.predict(inputs)
+    print(prediction)
+    print(f"accuracy: {utils.accuracy(prediction, targets)}")
+    print(prediction)
+    print(targets)
+    print(f"accuracy: {utils.accuracy(prediction, targets)}")
 
 
 if __name__ == "__main__":
