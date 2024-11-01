@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Iterable
-from inspect import signature
 
-import numpy as np
+import autograd.numpy as np
 
 
 class GD(ABC):
@@ -17,9 +15,10 @@ class GD(ABC):
         self.tuner = tuner
 
         self.gradient = None
-        self.m = 0      # first momentum
-        self.s = 0      # second momentum
+        self.m = 0.0      # first momentum
+        self.s = 0.0      # second momentum
         self.eps = 1e-8
+        self.prev_steps = 0.0
 
         if tuner is not None:
             if not (tuner in ["adagrad", "rmsprop", "adam"]):
@@ -28,10 +27,11 @@ class GD(ABC):
     def set_gradient(self, gradient):
         self.gradient = gradient
 
-    def add_momentum(self, steps, prev_steps):
-        steps += self.momentum * prev_steps
-        prev_steps = steps
-        return steps, prev_steps
+    def add_momentum(self, steps):
+        delta = self.momentum * self.prev_steps
+        self.prev_steps = steps
+        steps += delta
+        return steps
     
     def adagrad(self, gradient):
         self.s += gradient**2
@@ -44,16 +44,17 @@ class GD(ABC):
         steps = (self.lr*gradient)/(np.sqrt(self.s) + self.eps) #jnp.sqrt
         return steps
     
-    def adam(self, gradient):
+    def adam(self, gradient, t):
+        t = t+1
         beta1, beta2 = 0.9, 0.99
         self.m = beta1*self.m + (1 - beta1)*gradient
         self.s = beta2*self.s + (1 - beta2)*(gradient**2)
-        m_hat = self.m/(1 - beta1**self.t)
-        s_hat = self.s/(1 - beta2**self.t)
+        m_hat = self.m/(1 - beta1**t)
+        s_hat = self.s/(1 - beta2**t)
         steps = (self.lr*m_hat)/(np.sqrt(s_hat) + self.eps) #jnp.sqrt
         return steps
 
-    def tune_learning_rate(self, gradient) -> np.ndarray:
+    def tune_learning_rate(self, gradient, iter) -> np.ndarray:
         if self.tuner == "adagrad":
             steps = self.adagrad(gradient)
 
@@ -61,18 +62,17 @@ class GD(ABC):
             steps = self.rmsprop(gradient)
 
         elif self.tuner == "adam":
-            steps = self.adam(gradient)
+            steps = self.adam(gradient, iter)
         return steps
 
-    def step(self, gradient, params):
+    def step(self, gradient, params, iter):
         for param, grad in zip(params, gradient):
-            # print(f"parameters: {param}, gradient: {grad} \n")
             if self.tuner is None:
                 steps = self.lr * grad
             else:
-                steps = self.tune_learning_rate(grad)
+                steps = self.tune_learning_rate(grad, iter)
             if self.momentum:
-                steps, prev_steps = self.add_momentum(steps, prev_steps)
+                steps = self.add_momentum(steps)
             param -= steps
         return params
     

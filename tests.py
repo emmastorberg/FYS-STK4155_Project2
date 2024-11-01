@@ -1,11 +1,9 @@
-# import pytest # type: ignore
+import pytest # type: ignore
+import autograd.numpy as np
+from autograd import grad, jacobian
 
-import numpy as np
-from sklearn.linear_model import SGDRegressor # type: ignore
-from autograd import grad
-
-from GradientDescent import Plain, Stochastic
-from utils import sigmoid, ReLU, sigmoid_der, ReLU_der, mse, mse_der, cross_entropy
+from GradientDescent import Plain
+import utils
 from neural_network import NeuralNetwork
 
 def feed_forward(inputs, layers, activation_funcs):
@@ -15,25 +13,46 @@ def feed_forward(inputs, layers, activation_funcs):
         a = activation_func(z)
     return a
 
-def cost(layers, inputs, activation_funcs, target):
+
+def cost_mse(layers, inputs, activation_funcs, target):
     predict = feed_forward(inputs, layers, activation_funcs)
-    return mse(predict, target)
-
-def create_layers(network_input_size, layer_output_sizes):
-    layers = []
-
-    i_size = network_input_size
-    for layer_output_size in layer_output_sizes:
-        W = np.random.randn(layer_output_size, i_size).T
-        b = np.random.randn(layer_output_size)
-        layers.append((W, b))
-
-        i_size = layer_output_size
-    return layers
+    return utils.mse(predict, target)
 
 
-def test_simple_test():
-    assert 1 + 1 == 2
+def cost_cross_entropy(layers, inputs, activation_funcs, target):
+    predict = feed_forward(inputs, layers, activation_funcs)
+    return utils.cross_entropy(predict, target)
+
+
+@pytest.mark.parametrize("func, der", 
+                    [
+                        (utils.sigmoid, utils.sigmoid_der),
+                        (utils.ReLU, utils.ReLU_der),
+                        (utils.softmax_vec, utils.softmax_der)
+                    ]
+                )
+def test_autograd_activation(func, der):
+    input = np.random.randn(10, 4)
+    analytic = der(input)
+    gradient = jacobian(func, 0)
+    numeric = np.stack([gradient(row) for row in input])
+    assert np.allclose(analytic, numeric)
+
+
+@pytest.mark.parametrize("func, der", 
+                    [
+                        (utils.mse, utils.mse_der),
+                        (utils.cross_entropy, utils.cross_entropy_der),
+                    ]
+                )
+def test_autgrad_cost(func, der):
+    predict = np.random.randn(6, 4)
+    target = np.random.randn(4)
+    analytic = der(predict, target)
+    gradient = grad(func, 0)
+    numeric = gradient(predict, target)
+    assert np.allclose(analytic, numeric)
+
 
 def test_backpropagation():
     number_of_datapoints = np.random.randint(2, 20)
@@ -42,42 +61,63 @@ def test_backpropagation():
 
     inputs = np.random.rand(number_of_datapoints, network_input_size)
     layer_output_sizes = [5, 2, final_output_size]
-    activation_funcs = [sigmoid, ReLU, sigmoid]
-    activation_ders = [sigmoid_der, ReLU_der, sigmoid_der]
+    activation_funcs = [utils.sigmoid, utils.ReLU, utils.sigmoid]
+    activation_ders = [utils.sigmoid_der, utils.ReLU_der, utils.sigmoid_der]
 
     nn = NeuralNetwork(
         network_input_size,
         layer_output_sizes,
         activation_funcs,
         activation_ders,
-        cost_func = mse,
-        cost_grad = mse_der,
+        cost_func = utils.mse,
+        cost_der = utils.mse_der,
         optimizer=Plain(),
     )
 
     target = np.random.rand(number_of_datapoints, final_output_size)
-    layers = create_layers(network_input_size, layer_output_sizes)
-    layer_grads = nn._backpropagation(inputs, target)
+    layer_grads = nn.backpropagation(inputs, target)
 
-    print("Number of datapoints:", number_of_datapoints)
-    print("Network input size:", network_input_size)
-    print("Final output size:", final_output_size)
-
-    print("Our gradients:")
-    for i in range(len(layer_grads)):
-        print(i, layer_grads[i][1])
-
-    print("Autograd:")
-    cost_grad = grad(cost, 0)
+    layers = nn.layers
+    cost_grad = grad(cost_mse, 0)
     w_autograd = cost_grad(layers, inputs, activation_funcs, target)
-    for i in range(len(w_autograd)):
-        print(i, w_autograd[i][1])
+
+    for i in range(len(layers)):
+        assert np.allclose(layer_grads[i][1], w_autograd[i][1])
+        assert np.allclose(layer_grads[i][0], w_autograd[i][0])
 
 
-if __name__ == "__main__":
-    test_backpropagation()
+def test_iris_data_backprop():
+    inputs, target = utils.get_iris_data()
+    network_input_size = 4
+    layer_output_sizes = [4, 8, 3]
+    activation_funcs = [utils.sigmoid, utils.sigmoid, utils.sigmoid, utils.softmax]
+    activation_ders = [utils.sigmoid_der, utils.sigmoid_der, utils.sigmoid_der, utils.softmax_der]
 
+    nn = NeuralNetwork(
+        network_input_size,
+        layer_output_sizes,
+        activation_funcs,
+        activation_ders,
+        cost_func = utils.cross_entropy,
+        cost_der = utils.cross_entropy_der,
+        optimizer=Plain(),
+    )
 
+    layer_grads = nn.backpropagation(inputs, target)
+
+    layers = nn.layers
+    cost_der = grad(cost_cross_entropy, 0)
+    w_autograd = cost_der(layers, inputs, activation_funcs, target)
+
+    for i in range(len(layers)):
+        assert np.allclose(layer_grads[i][1], w_autograd[i][1]), f"{i}, W"
+        assert np.allclose(layer_grads[i][0], w_autograd[i][0]), f"{i}, b"
+    
+
+# if __name__ == "__main__":
+#     test_backpropagation()
+#     test_iris_data_backprop()
+#     test_autograd()
 # def test_plain_fixed_perform() -> None:
 #     """
 #     Not correct, but close.

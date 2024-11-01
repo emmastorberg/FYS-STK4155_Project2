@@ -1,7 +1,6 @@
 import autograd.numpy as np # type: ignore
 from sklearn.datasets import load_iris
 from sklearn.metrics import accuracy_score
-from autograd import grad, elementwise_grad
 
 
 def Franke_function(x: np.ndarray, y: np.ndarray, noise: bool = True) -> np.ndarray:
@@ -71,25 +70,37 @@ def ReLU(z):
     return np.where(z > 0, z, 0)
 
 def ReLU_der(z):
-    return np.where(z > 0, 1, 0)
+    der = np.where(z > 0, 1, 0)
+    return np.stack([np.diag(row) for row in der])
 
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
 def sigmoid_der(z):
-    return np.exp(-z) / (1 + np.exp(-z))**2
+    der = sigmoid(z) * (1 - sigmoid(z))
+    return np.stack([np.diag(row) for row in der])
 
 def softmax(z):
-    e_z = np.exp(z - np.max(z, axis=0))
-    return e_z / np.sum(e_z, axis=1)[:, np.newaxis]
+    e_z = np.exp(z - np.max(z, axis=1, keepdims=True))
+    return e_z / np.sum(e_z, axis=1, keepdims=True)
+
+def softmax_vec(z):
+    """Compute softmax values for each set of scores in the vector z.
+    Use this function when you use the activation function on one vector at a time"""
+    e_z = np.exp(z - np.max(z))
+    return e_z / np.sum(e_z)
+
+# def softmax_der(z):
+#     gradient = elementwise_grad(softmax, 0)
+#     return gradient(z)
 
 def softmax_der(z):
-    gradient = elementwise_grad(softmax, 0)
-    return gradient(z)
+    s = softmax(z)
+    return np.stack([np.diag(row) - np.outer(row, row.T) for row in s])
 
 def mse(predict, target):
     n = len(target)
-    return (1/n) * np.sum((predict - target)**2, axis=0)
+    return (1/n) * np.sum((predict - target)**2)
 
 def mse_der(predict, target):
     n = len(target)
@@ -97,6 +108,9 @@ def mse_der(predict, target):
 
 def cross_entropy(predict, target):
     return np.sum(-target * np.log(predict))
+
+def cross_entropy_der(predict, target):
+    return -target / predict
 
 def get_iris_data():
     iris = load_iris()
@@ -118,16 +132,3 @@ def analytic_grad_OLS(X, beta, y):
 
 def analytic_grad_Ridge(X, y, beta, lmbda):
     ...
-
-def adagrad():
-    # TODO: move method to here (?)
-    ...
-
-def rmsprop():
-    # TODO: move method to here (?)
-    ...
-
-def adam():
-    # TODO: move method to here (?)
-    ...
-
