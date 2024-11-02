@@ -18,7 +18,7 @@ class GD(ABC):
         self.m = 0.0      # first momentum
         self.s = 0.0      # second momentum
         self.eps = 1e-8
-        self.prev_steps = 0.0
+        self.delta = 0.0
 
         if tuner is not None:
             if not (tuner in ["adagrad", "rmsprop", "adam"]):
@@ -27,11 +27,9 @@ class GD(ABC):
     def set_gradient(self, gradient):
         self.gradient = gradient
 
-    def add_momentum(self, steps):
-        delta = self.momentum * self.prev_steps
-        self.prev_steps = steps
-        steps += delta
-        return steps
+    def add_momentum(self):
+        momentum = self.momentum * self.prev_steps
+        return momentum
     
     def adagrad(self, gradient):
         self.s += gradient**2
@@ -66,13 +64,16 @@ class GD(ABC):
         return steps
 
     def step(self, gradient, params, iter):
+        # print(f"gradient: {gradient}")
         for param, grad in zip(params, gradient):
             if self.tuner is None:
                 steps = self.lr * grad
             else:
                 steps = self.tune_learning_rate(grad, iter)
             if self.momentum:
-                steps = self.add_momentum(steps)
+                # print(self.momentum * self.delta)
+                steps += self.momentum * self.delta
+                self.delta = steps
             param -= steps
         return params
     

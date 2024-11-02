@@ -1,5 +1,7 @@
 from typing import Optional
 
+from tqdm import tqdm # type: ignore
+
 from .gradient_descent import GD
 
 
@@ -18,9 +20,10 @@ class Plain(GD):
         i = 0
         # grad_mag = np.inf
 
-        while (i < self.max_iter): # and (grad_mag > self.eps):
+        # while (i < self.max_iter): # and (grad_mag > self.eps):
+        for i in tqdm(range(self.max_iter)):
             gradient = self.gradient(input, params, target)
             params = self.step(gradient, params, i)
             # grad_mag = np.linalg.norm(np.sum(gradient), ord=2)
-            i += 1
+            # i += 1
         return params

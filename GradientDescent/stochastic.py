@@ -1,6 +1,7 @@
 from typing import Optional
 
 import numpy as np
+from tqdm import tqdm
 
 from .gradient_descent import GD
 
@@ -28,7 +29,7 @@ class Stochastic(GD):
 
     def gradient_descent(self, input, params, target):
         m = len(input) // self.M
-        for epoch in range(self.n_epochs):
+        for epoch in tqdm(range(self.n_epochs)):
             m_range = np.arange(0, m)
             np.random.shuffle(m_range)
 

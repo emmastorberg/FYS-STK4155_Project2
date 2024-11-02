@@ -1,4 +1,5 @@
 import itertools
+from typing import Optional
 
 import autograd.numpy as np # type: ignore
 
@@ -13,16 +14,19 @@ class NeuralNetwork:
             cost_func,
             cost_der,
             optimizer,
+            seed: Optional[int] = None
     ) -> None:
         self.activation_funcs = activation_funcs
         self.activation_ders = activation_ders
         self.cost_func = cost_func
         self.cost_der = cost_der
         self.optimizer = optimizer
+        self.seed = seed
 
         self.layers = self.create_layers(network_input_size, layer_output_sizes)
 
     def create_layers(self, network_input_size: int, layer_output_sizes: list[int]) -> list:
+        np.random.seed(self.seed)
         layers = []
 
         i_size = network_input_size
@@ -47,10 +51,17 @@ class NeuralNetwork:
         layer_inputs = []
         zs = []
         a = input
+        # i = 0
         for (W, b), activation_func in zip(self.layers, self.activation_funcs):
             layer_inputs.append(a)
+            # print(f"W layer {i}: {W}")
+            # print(f"b layer {i}: {b}")
+            # print(f"a layer {i}: {a}")
             z = a @ W + b
             a = activation_func(z)
+            # print(f"alpha(a) layer {i}: {a}")
+            # print("\n")
+            # i += 1
 
             zs.append(z)
 
@@ -91,6 +102,7 @@ class NeuralNetwork:
         self.layers = layers
         layer_grads = self.backpropagation(input, target)
         layer_grads = self.flatten_layers(layer_grads)
+        
         return layer_grads
 
     def train(self, input, target):
