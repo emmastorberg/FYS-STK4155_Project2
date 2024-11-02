@@ -2,12 +2,31 @@
 %https://www.overleaf.com/learn/latex/Articles/Getting_started_with_BibLaTeX
 %https://www.overleaf.com/learn/latex/Bibliography_management_with_biblatex#Reference_guide
 
+@book{deeplearningbookChapter8,
+  title                    = {Deep Learning},
+  author                   = {Ian J. Goodfellow and Yoshua Bengio and Aaron Courville},
+  publisher                = {MIT Press},
+  year                     = {2016},
+  address                  = {Cambridge, MA, USA},
+  url                     = {http://www.deeplearningbook.org},
+chapter = {8}
+}
+
 @book{MLtextbook,
     author = {Sebastian Raschka and Yuxi Liu and Vahid Mirjalili},
     title = "Machine Learning with PyTorch and Scikit-Learn",
     publisher = "Packt Publishing",
     year = "2022", 
     page    = "293"
+}
+
+@article{Kingma2014AdamAM,
+  title={Adam: A Method for Stochastic Optimization},
+  author={Diederik P. Kingma and Jimmy Ba},
+  journal={CoRR},
+  year={2014},
+  volume={abs/1412.6980},
+  url={https://api.semanticscholar.org/CorpusID:6628106}
 }
 
 @article{outliers,
@@ -17,6 +36,34 @@ and Foreign Direct Investment",
     journal = "Quarterly Journal of Political Science",
     year = "2009"
 }
+
+@article{ZELTZER2023480,
+    title = {Diagnostic Accuracy of Artificial Intelligence in Virtual Primary Care},
+    journal = {Mayo Clinic Proceedings: Digital Health},
+    volume = {1},
+    number = {4},
+    pages = {480-489},
+    year = {2023},
+    issn = {2949-7612},
+    doi = {https://doi.org/10.1016/j.mcpdig.2023.08.002},
+    url = {https://www.sciencedirect.com/science/article/pii/S2949761223000706},
+    author = {Dan Zeltzer and Lee Herzog and Yishai Pickman and Yael Steuerman and Ran Ilan Ber and Zehavi Kugler and Ran Shaul and Jon O. Ebbert}
+}
+
+@online{crossentropyExample,
+    author = "James McCaffrey",
+    title = "Why You Should Use Cross-Entropy Error Instead Of Classification Error Or Mean Squared Error For Neural Network Classifier Training",
+    url = "https://jamesmccaffrey.wordpress.com/2013/11/05/why-you-should-use-cross-entropy-error-instead-of-classification-error-or-mean-squared-error-for-neural-network-classifier-training/"}
+
+@online{crossentropyYouTube,
+        title = {Why We Don't Use the Mean Squared Error (MSE) Loss in Classification},
+        date = {2023},
+        month = "6",
+        day = "5",
+        organization = {YouTube},
+        author = {DataMListic},
+        url = {https://www.youtube.com/watch?v=bNwI3IUOKyg},
+    }
 
 @online{docslassoreg,
     author    = "Jan Kirenz",
@@ -30,16 +77,64 @@ and Foreign Direct Investment",
     url = "https://en.wikipedia.org/wiki/Gauss–Markov_theorem"
 }
 
+@online{gradientdescentwithmomentum,
+    organization = "Towards Data Science",
+    author = "Rauf Bhat",
+    title = "Gradient Descent With Momentum",
+    url = "https://towardsdatascience.com/gradient-descent-with-momentum-59420f626c8f"
+
+}
+
 @online{lassoregression,
     organization    = "Scikit-Learn Developers",
     title     = "Lasso",
     url       = "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html"
 }
 
+@online{machinelearningFAQ,
+    author = "Sebastian Raschka",
+    url = "https://sebastianraschka.com/faq/docs/sgd-methods.html",
+    title = "Machine Learning FAQ"}
+
+@online{mediumReLU,
+    author = "Serkan Kızılırmak",
+    title = "Rectified Linear Unit (ReLU) Function: Understanding the Basics",
+    url = "https://medium.com/@serkankizilirmak/rectified-linear-unit-relu-function-in-machine-learning-understanding-the-basics-3770bb31c2a8"}
+
+@online{metanaClassificationTasks,
+    organization = "Metana",
+    title = "Deep Learning Models For Classification : A Comprehensive Guide",
+    url = "https://metana.io/blog/deep-learning-models-for-classification-a-comprehensive-guide/",
+    date = "2013",
+    month = "8",
+    day = "25",
+}
+
+@online{MHJlogisticregression,
+    author = "Morten Hjorth-Jensen",
+    title = "Logistic Regression",
+    url = "https://compphysics.github.io/MachineLearning/doc/LectureNotes/_build/html/chapter4.html"}
+
+@online{MHJoptimization, 
+    author = "Morten Hjorth-Jensen",
+    title = "Optimization, the central part of any Machine Learning algorithm",
+    url = "https://compphysics.github.io/MachineLearning/doc/LectureNotes/_build/html/chapteroptimization.html#revisiting-our-linear-regression-solvers"}
+
 @online{MHJweek35,
     author    = "Morten Hjorth-Jensen",
     title     = "From Ordinary Linear Regression to Ridge and Lasso Regression",
     url       = "https://compphysics.github.io/MachineLearning/doc/LectureNotes/_build/html/week35.html#ridge-and-lasso-regression"
+}
+
+@online{MHJweek39,
+    author = "Morten Hjorth-Jensen",
+    title = "Optimization and Gradient Methods",
+    url = "https://compphysics.github.io/MachineLearning/doc/LectureNotes/_build/html/week39.html"}
+
+@online{MHJweek42,
+    author = "Morten Hjorth-Jensen",
+    title  = "Constructing a Neural Network code with examples",
+    url = "https://compphysics.github.io/MachineLearning/doc/LectureNotes/_build/html/week42.html"
 }
 
 @online{numpymeshgrid,
@@ -53,18 +148,49 @@ and Foreign Direct Investment",
     title = "Coefficient of determination",
     url = "https://en.wikipedia.org/wiki/Coefficient_of_determination"}
 
+@online{ReLU,
+    organization = "Wikipedia",
+    title = "Rectifier (neural networks)",
+    url = "https://en.wikipedia.org/wiki/Rectifier_(neural_networks)"
+}
+
+@online{sgdYouTube,
+        title = {Stochastic Gradient Descent, Clearly Explained!!!},
+        date = {2019},
+        month = "5",
+        day = "13",
+        organization = {YouTube},
+        author = {StatQuest with John Starmer},
+        url = {https://www.youtube.com/watch?v=vMh0zPT0tLI},
+    }
+
 @online{secoda, 
     author = "Dexter Chu",
     title = "When to Normalize or Standardize Data", 
     url = "https://www.secoda.co/learn/when-to-normalize-or-standardize-data"
 }
 
+@online{sigmoid, 
+    organization = "Wikipedia",
+    title= "Sigmoid function", 
+    url = "https://en.wikipedia.org/wiki/Sigmoid_function"}
+
+@online{sklearnBreastCancerData,
+    organization  = "Scikit-Learn Developers",
+    title   = "load\_breast\_cancer",
+    url     = "https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html",
+}
+
 @online{sklearnScaling,
     organization  = "Scikit-Learn Developers",
     title   = "Compare the effect of different scalers on data with outliers",
     url     = "https://scikit-learn.org/stable/auto_examples/preprocessing/plot_all_scaling.html"
-
 }
+
+@online{softmax,
+    organization = "Wikipedia",
+    title = "Softmax function",
+    url = "https://en.wikipedia.org/wiki/Softmax_function"}
 
 @online{SVD,
     organization  = "Wikipedia",
@@ -93,7 +219,8 @@ and Foreign Direct Investment",
 @unpublished{fysstkproject1,
     author = {Emma Storberg \& Frida Lien},
     title = "Linear Regression and Basic Resampling Techniques for Modeling 2D Datasets",
-    note = "Project 1 in FYS-STK4155, fall 2024 semester."
+    note = "Project 1 in FYS-STK4155, fall 2024 semester.",
+    url = "https://github.com/emmastorberg/FYS-STK4155_Project1/blob/main/FYS_STK4155_Project1_FinalReport.pdf"
 }
 
 @techreport{franke,
