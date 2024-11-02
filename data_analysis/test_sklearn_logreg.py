@@ -14,9 +14,6 @@ import git
 
 import utils
 
-
-#data_pipeline = Pipeline(steps=[("scaler", StandardScaler())])
-
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 
 def run_logistic_regression():
@@ -29,21 +26,29 @@ def run_logistic_regression():
     feature_importances = []
 
     X = data.data
-    y = data.target
+    y = np.where(data.target == 0, 1, 0)
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=config['test_size'], random_state=config["seed"])
 
-    scaler = StandardScaler(with_mean=True, with_std=True)
-    X_train = scaler.fit_transform(X_train)
-    X_test = scaler.transform(X_test)
+    # scaler = StandardScaler(with_mean=True, with_std=True)
+    # X_train = scaler.fit_transform(X_train)
+    # X_test = scaler.transform(X_test)
 
-    model = LogisticRegression(random_state=config["seed"])
-    model.fit(X_train, y_train)
+    #model = LogisticRegression(random_state=config["seed"])
+    #model.fit(X_train, y_train)
 
-    cf = confusion_matrix(y_test, model.predict(X_test)).ravel()
-    scores = utils.get_scores(X_test, y_test, model)
-    feature_importance = (np.exp(model.coef_[0]))
+    pipe = Pipeline(
+        steps=[
+            ("transform", StandardScaler()),
+            ("clf", LogisticRegression(random_state=config["seed"]))
+            ])
+
+    pipe.fit(X_train, y_train)
+
+    cf = confusion_matrix(y_test, pipe.predict(X_test)).ravel()
+    scores = utils.get_scores(X_test, y_test, pipe)
+    feature_importance = (np.exp(pipe["clf"].coef_[0]))
 
     eval_df = pd.DataFrame(
              cf,

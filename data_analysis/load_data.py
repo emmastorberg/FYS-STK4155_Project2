@@ -31,7 +31,7 @@ correlation_with_target = data.apply(lambda x: x.corr(target))
 # Plotting the heatmap
 plt.figure(figsize=(10, 10))
 sns.heatmap(correlation_with_target.to_frame(), annot=True, cmap='coolwarm', cbar=True)
-plt.title('Correlation of Features with Target')
+plt.title('Correlation of features with target')
 #plt.show()
 
 #print(data)

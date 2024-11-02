@@ -6,6 +6,7 @@ from sklearn.metrics import (
     precision_score,
 )
 
+
 def get_config(path):
     config = None
     with open(path, "r") as file:
