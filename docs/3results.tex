@@ -11,28 +11,40 @@ Next, we tested SGD and SDG with momentum with crude tunable learning rate (chan
 \[
 \eta_t = (1- \kappa)\eta_0 + \kappa \eta_\tau 
 \]
-Our tests shows the best mini-batch size was X, so we kept this rate fixed and plotted as function of number of epochs. 
+Our tests shows the best mini-batch size was X, so we kept this rate fixed and plotted as function of number of epochs. This is displayed in figure \ref{fig:sgdVSanalytical}.
 \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{figures/placeholders/sgdVSanalytical.png}
     \caption{\textcolor{purple}{Plot showing our SGD, SGD with momentum  compared to analytical solutions, fixed mini-batch size. Function of number of epochs.}}
     \label{fig:sgdVSanalytical}
 \end{figure}
-\textcolor{purple}{Plot showing our SGD, SGD with momentum  compared to analytical solutions, fixed mini-batch size. Function of number of epochs.}
 
-From this point on, we will continue using SGD for computational efficiency.
+\textcolor{red}{(We should time our results with plain and SGD and mention here that SGD is quicker.)} From this point on, we will continue using SGD for computational efficiency.
 
-Now we test out the methods with tunable learning rates. We initialize them at the same fixed value X. We will plot the learning rates for each of the tunable methods with and without momentum (see photo on Emma's phone) and see if the learning rates are adaptable in the way we intended.\\
-\textcolor{purple}{Figure: Plot of 3 subplots showing SGD w and w/o momentum for each of the three methods of adaptable learning rates.  Function of number of epochs.}
+Now we test out the methods with adaptive learning rates. We initialize them at the same fixed value X. We will plot the learning rates for each of the tunable methods with and without momentum (see photo on Emma's phone) and see if the learning rates are adaptable in the way we intended. We compare the development of the learning rates over the epochs in figure \ref{fig:learningratesGD}, and the development of the MSE in figure \ref{fig:MSEGD}. We expect the MSE to be more jittery in the methods without momentum, and also to converge faster in the methods with.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/placeholders/learningratesGD.png}
+    \caption{\textcolor{purple}{Plot of 3 subplots showing SGD w and w/o momentum for each of the three methods of adaptable learning rates.  Function of number of epochs. Learning rate on y-axis.}}
+    \label{fig:learningratesGD}
+\end{figure}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/placeholders/MSEGD.png}
+    \caption{\textcolor{purple}{Plot of 3 subplots showing SGD w and w/o momentum for each of the three methods of adaptable learning rates.  Function of number of epochs. MSE on y-axis.}}
+    \label{fig:MSEGD}
+\end{figure}
 
-Now we will make the same three subplots with MSE. We expect the MSE to be more jittery in the methods without momentum, and also to converge faster.\\
-\textcolor{purple}{Figure: Plot of 3 subplots showing SGD w and w/o momentum for each of the three methods of adaptable learning rates.  Function of number of epochs.}
+As part of our testing process, we compared the performance of our gradients to that of the automatic gradient library Autograd \cite{autograd}. Since our tests pass\footnote{All tests can be found on the project's GitHub in \texttt{tests.py}: \url{https://github.com/emmastorberg/FYS-STK4155_Project2/blob/main/tests.py}}, we expected our methods to give quite similar results, which they did\footnote{Plot showing our methods compared to Autograd can be found in appendix \textcolor{red}{(LETTER)}.}. 
 
-Upon comparison with Autograd we see similar/different performance. Our methods pass testing compared to these methods, so we expect our methods will give quite similar results to Autograd.
-
-Up to this point we have only looked at OLS as a regression method. When we use ridge regression instead, we also have to consider the hyperparameter $\lambda$. We will now perform a gird search to find the best possible combination of method and $\lambda$. The grid search table might go in the appendix, but we will state the results here.\\
-\textcolor{purple}{Possible figure: Grid search table of the seven possible methods compared for different values of the hyperparameter $\lambda$}
+Up to this point, we have only looked at OLS as a regression method. When we use ridge regression instead, there is the additional hyperparameter $\lambda$ to consider. We performed a grid search to determine what combination of $\lambda$ and gradient descent method to choose. We tested $\lambda \in \text{\textcolor{red}{(value)}}$ ag The grid search table can be seen in figure \ref{fig:gridsearch_ridge}, where we can visually determine the best method as \textcolor{red}{(add method here)}, with $\lambda = \text{\textcolor{red}{(value)}}$. \textcolor{red}{An additional table showing the results of a grid search for finding the best $R^2$ score can be found in appendix (LETTER). (Remove if we don't do this.)} 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/placeholders/gridsearch_ridge.png}
+    \caption{\textcolor{purple}{Grid search table of the seven possible methods compared for different values of the hyperparameter $\lambda$}}
+    \label{fig:gridsearch_ridge}
+\end{figure}
 
 \subsection{Neural Network for Numerical Prediction}
 At this point we have to choose a gradient descent method to stick to for at least the numerical prediction task (probably Adam). We will comment the fact that we have tested a few different neural networks, and we will show our best performing one compared to OLS and ridge regression, with the best option for each that we determined in the previous section.\\
