@@ -15,7 +15,7 @@ print(data.columns)
 
 # Get an impression of the target distribution in our data set to check that it is balanced
 #print((target.value_counts(normalize=True)))
-print(target.value_counts(normalize = True))
+#print(target.value_counts(normalize = True))
 
 # Distribution  of features
 #print(data.describe())
@@ -33,3 +33,5 @@ plt.figure(figsize=(10, 10))
 sns.heatmap(correlation_with_target.to_frame(), annot=True, cmap='coolwarm', cbar=True)
 plt.title('Correlation of Features with Target')
 #plt.show()
+
+#print(data)
