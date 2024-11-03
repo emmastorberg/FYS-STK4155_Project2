@@ -1,5 +1,5 @@
 import autograd.numpy as np # type: ignore
-from autograd import jacobian
+from autograd import jacobian, grad
 from sklearn.datasets import load_iris, load_breast_cancer
 from sklearn.metrics import accuracy_score
 
@@ -70,7 +70,10 @@ def no_activation_der(z):
 def ReLU(z):
     return np.where(z > 0, z, 0)
 
-def ReLU_der(z):
+def ReLU_der(z, dC_da):
+    return dC_da * np.where(z > 0, 1, 0)
+
+def ReLU_jacobi(z):
     der = np.where(z > 0, 1, 0)
     return np.stack([np.diag(row) for row in der])
 
@@ -78,7 +81,12 @@ def leaky_ReLU(z):
     alpha = 0.01
     return np.where(z > 0, z, 0) + np.where(z < 0, alpha * z, 0)
 
-def leaky_ReLU_der(z):
+def leaky_ReLU_der(z, dC_da):
+    alpha = 0.1
+    der = np.where(z > 0, 1, 0) + np.where(z < 0, alpha, 0)
+    return dC_da * der
+
+def leaky_ReLU_jacobi(z):
     alpha = 0.01
     der = np.where(z > 0, 1, 0) + np.where(z < 0, alpha, 0)
     return np.stack([np.diag(row) for row in der])
@@ -86,13 +94,23 @@ def leaky_ReLU_der(z):
 def sigmoid(z):
     # if np.any(np.isinf((1 + np.exp(-z)))):
     #     print("hei")
+    # eps = 1e-15
+    # z = np.clip(z, eps, 1-eps)
     neg = np.where(z < 0, np.exp(z) / (1 + np.exp(z)), 0)
     pos = np.where(z >= 0, 1 / (1 + np.exp(-z)), 0)
-    return pos + neg
+    return neg + pos
 
-def sigmoid_der(z):
+def sigmoid_der(z, dC_da):
     der = sigmoid(z) * (1 - sigmoid(z))
-    return np.stack([np.diag(row) for row in der])
+    return dC_da * der
+
+def sigmoid_jacobi(z):
+    jacobi = jacobian(sigmoid, 0)
+    der = []
+    for row in z:
+        der.append(jacobi(row))
+    der = np.array(der)
+    return der
 
 def softmax(z):
     e_z = np.exp(z - np.max(z, axis=1, keepdims=True))
@@ -104,13 +122,15 @@ def softmax_vec(z):
     e_z = np.exp(z - np.max(z))
     return e_z / np.sum(e_z)
 
-# def softmax_der(z):
-#     gradient = elementwise_grad(softmax, 0)
-#     return gradient(z)
-
-def softmax_der(z):
+def softmax_jacobi(z):
     s = softmax(z)
     return np.stack([np.diag(row) - np.outer(row, row.T) for row in s])
+
+def softmax_der(z, dC_da):
+    s = softmax(z)
+    jacobi = np.stack([np.diag(row) - np.outer(row, row.T) for row in s])
+    return np.einsum("ij, ijk -> ik", dC_da, jacobi)
+    # return np.stack([np.diag(row) - np.outer(row, row.T) for row in s])
 
 def mse(predict, target):
     n = len(target)
@@ -121,15 +141,16 @@ def mse_der(predict, target):
     return (2/n) * (predict - target)
 
 def cross_entropy(predict, target):
-    eps = 1e-8
-    predict = np.clip(predict, eps, 1 - eps)
+    # eps = 1e-8
+    # predict = np.clip(predict, eps, 1 - eps)
     return np.sum(-target * np.log(predict))
 
 def binary_cross_entropy(predict, target):
     # Clip predictions to avoid log(0)
     eps = 1e-8
     predict = np.clip(predict, eps, 1 - eps)
-    return np.mean(target * np.log(predict) + (1 - target) * np.log(1 - predict))
+    return -np.mean((target * np.log(predict) + (1 - target) * np.log(1 - predict)))
+    # return -np.mean(target * np.log(predict) + (1 - target) * np.log(1 - predict))
 
 def cross_entropy_der(predict, target):
     # predict = np.clip(predict, 1e-7, 1 - 1e-7)

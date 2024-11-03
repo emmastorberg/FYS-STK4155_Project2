@@ -31,8 +31,8 @@ class NeuralNetwork:
 
         i_size = network_input_size
         for layer_output_size in layer_output_sizes:
-            W = np.random.randn(layer_output_size, i_size).T
-            b = np.random.randn(layer_output_size)
+            W = np.random.randn(layer_output_size, i_size).T * 0.1
+            b = np.ones(layer_output_size) * 0.1
             layers.append((W, b))
 
             i_size = layer_output_size
@@ -51,18 +51,10 @@ class NeuralNetwork:
         layer_inputs = []
         zs = []
         a = input
-        # i = 0
         for (W, b), activation_func in zip(self.layers, self.activation_funcs):
             layer_inputs.append(a)
-            # print(f"W layer {i}: {W}")
-            # print(f"b layer {i}: {b}")
-            # print(f"a layer {i}: {a}")
             z = a @ W + b
             a = activation_func(z)
-            # print(f"alpha(a) layer {i}: {a}")
-            # print("\n")
-            # i += 1
-
             zs.append(z)
 
         return layer_inputs, zs, a
@@ -80,7 +72,7 @@ class NeuralNetwork:
             else:
                 (W, b) = self.layers[i + 1]
                 dC_da = dC_dz @ W.T
-            dC_dz = np.einsum("ij, ijk -> ik", dC_da, activation_der(z))
+            dC_dz = activation_der(z, dC_da)
             dC_dW = layer_input.T @ dC_dz
             dC_db = np.mean(dC_dz, axis=0) * len(layer_input) # deriv wrt b is 1
 

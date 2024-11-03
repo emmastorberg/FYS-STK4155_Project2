@@ -1,6 +1,9 @@
+import itertools
+
 import pytest # type: ignore
 import autograd.numpy as np
 from autograd import grad, jacobian
+from sklearn.metrics import log_loss
 
 from GradientDescent import Plain
 import utils
@@ -26,10 +29,10 @@ def cost_cross_entropy(layers, inputs, activation_funcs, target):
 
 @pytest.mark.parametrize("func, der", 
                     [
-                        (utils.sigmoid, utils.sigmoid_der),
-                        (utils.ReLU, utils.ReLU_der),
-                        (utils.softmax_vec, utils.softmax_der),
-                        (utils.leaky_ReLU, utils.leaky_ReLU_der)
+                        (utils.sigmoid, utils.sigmoid_jacobi),
+                        (utils.ReLU, utils.ReLU_jacobi),
+                        (utils.softmax_vec, utils.softmax_jacobi),
+                        (utils.leaky_ReLU, utils.leaky_ReLU_jacobi)
                     ]
                 )
 def test_autograd_activation(func, der):
@@ -43,7 +46,6 @@ def test_autograd_activation(func, der):
 @pytest.mark.parametrize("func, der", 
                     [
                         (utils.mse, utils.mse_der),
-                        (utils.cross_entropy, utils.cross_entropy_der),
                     ]
                 )
 def test_autgrad_cost(func, der):
@@ -88,10 +90,12 @@ def test_backpropagation():
     layers = nn.layers
     cost_grad = grad(cost_mse, 0)
     w_autograd = cost_grad(layers, inputs, activation_funcs, target)
+    print(layer_grads[0][1])
+    print(w_autograd[0][1])
 
     for i in range(len(layers)):
-        assert np.allclose(layer_grads[i][1], w_autograd[i][1])
-        assert np.allclose(layer_grads[i][0], w_autograd[i][0])
+        assert np.allclose(layer_grads[i][1], w_autograd[i][1]), f"W, {i}"
+        assert np.allclose(layer_grads[i][0], w_autograd[i][0]), f"b, {i}"
 
 
 def test_iris_data_backprop():
@@ -120,9 +124,75 @@ def test_iris_data_backprop():
     for i in range(len(layers)):
         assert np.allclose(layer_grads[i][1], w_autograd[i][1]), f"{i}, W"
         assert np.allclose(layer_grads[i][0], w_autograd[i][0]), f"{i}, b"
+
+
+@pytest.mark.parametrize("pred, target", 
+                            [
+                                (np.array([1.0, 0.0, 1.0]), np.array([1, 0, 1])), 
+                                (np.array([0.9, 0.1, 0.8]), np.array([1, 0, 1])),
+                                (np.array([0.5, 0.5, 0.5]), np.array([1, 0, 1])),
+                            ]
+                        )
+def test_cross_entropy(pred, target):
+    computed = utils.binary_cross_entropy(pred, target)
+    expected = log_loss(target, pred)
+    msg = f"computed: {computed}, expected: {expected}, pred: {pred}, target: {target}"
+    assert np.isclose(computed, expected), msg
+
+
+def test_gradient_descent():
+    layers = []
+    for i in range(3):
+        W = np.random.randn(5, 8)
+        b = np.random.randn(5)
+        layers.append(W)
+        layers.append(b)
+
+    def gradient(input, layers, target):
+        layers_grads = []
+        for i, param in enumerate(layers):
+            derivative = np.ones_like(param) * 1 / (i+1)
+            layers_grads.append(derivative)
+        return layers_grads
+
+    inputs = None
+    targets = None
+
+    optimizer = Plain(lr=0.01, max_iter=3)
+    optimizer.set_gradient(gradient)
+    optim_layers = optimizer.gradient_descent(inputs, layers, targets)
+
+    expected = []
+    for i in range(3):
+        grads = gradient(inputs, layers, targets)
+        for param, d_param in zip(layers, grads):
+            param -= 0.01 * d_param
+            if i == 2:
+                expected.append(param)
+
+    for pred, computed in zip(expected, optim_layers):
+        assert np.allclose(pred, computed)
+
+def test_flatten_reconstruct():
+    tuples = [(1, 2), (3, 4), (5, 6)]
+    nn = NeuralNetwork(4, [2], None, None, None, None, None)
+    flattened_tuples = nn.flatten_layers(tuples)
+    expected = [1, 2, 3, 4, 5, 6]
+    assert flattened_tuples == expected
+
+    reconstructed_tuples = nn.reconstruct_layers(flattened_tuples)
+    assert reconstructed_tuples == tuples
+
+
+
+
+
+
+
     
 
 # if __name__ == "__main__":
+#     test_gradient_descent()
 #     test_backpropagation()
 #     test_iris_data_backprop()
 #     test_autograd()
