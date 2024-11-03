@@ -1,5 +1,7 @@
 from typing import Optional
 
+from tqdm import tqdm # type: ignore
+
 from .gradient_descent import GD
 
 
@@ -15,12 +17,19 @@ class Plain(GD):
         self.max_iter = max_iter
 
     def gradient_descent(self, input, params, target):
+        if self.tuner is not None:
+            self.m = [0.0] * len(params)
+            self.s = [0.0] * len(params)
+        if self.momentum:
+            self.delta = [0.0] * len(params)
+
+
         i = 0
         # grad_mag = np.inf
-
-        while (i < self.max_iter): # and (grad_mag > self.eps):
+        # while (i < self.max_iter): # and (grad_mag > self.eps):
+        for i in tqdm(range(self.max_iter)):
             gradient = self.gradient(input, params, target)
             params = self.step(gradient, params, i)
             # grad_mag = np.linalg.norm(np.sum(gradient), ord=2)
-            i += 1
+            # i += 1
         return params

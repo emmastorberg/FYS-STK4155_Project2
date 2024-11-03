@@ -28,7 +28,8 @@ def cost_cross_entropy(layers, inputs, activation_funcs, target):
                     [
                         (utils.sigmoid, utils.sigmoid_der),
                         (utils.ReLU, utils.ReLU_der),
-                        (utils.softmax_vec, utils.softmax_der)
+                        (utils.softmax_vec, utils.softmax_der),
+                        (utils.leaky_ReLU, utils.leaky_ReLU_der)
                     ]
                 )
 def test_autograd_activation(func, der):
@@ -52,6 +53,13 @@ def test_autgrad_cost(func, der):
     gradient = grad(func, 0)
     numeric = gradient(predict, target)
     assert np.allclose(analytic, numeric)
+
+
+def test_leaky_ReLU():
+    input = np.array([-2, -1, 0, 1, 2])
+    expected = np.array([-0.02, -0.01, 0, 1, 2])
+    computed = utils.leaky_ReLU(input)
+    assert np.allclose(expected, computed)
 
 
 def test_backpropagation():
@@ -89,7 +97,7 @@ def test_backpropagation():
 def test_iris_data_backprop():
     inputs, target = utils.get_iris_data()
     network_input_size = 4
-    layer_output_sizes = [4, 8, 3]
+    layer_output_sizes = [8, 6, 4, 3]
     activation_funcs = [utils.sigmoid, utils.sigmoid, utils.sigmoid, utils.softmax]
     activation_ders = [utils.sigmoid_der, utils.sigmoid_der, utils.sigmoid_der, utils.softmax_der]
 

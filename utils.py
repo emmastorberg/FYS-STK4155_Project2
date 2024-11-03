@@ -1,5 +1,6 @@
 import autograd.numpy as np # type: ignore
-from sklearn.datasets import load_iris
+from autograd import jacobian
+from sklearn.datasets import load_iris, load_breast_cancer
 from sklearn.metrics import accuracy_score
 
 
@@ -73,8 +74,21 @@ def ReLU_der(z):
     der = np.where(z > 0, 1, 0)
     return np.stack([np.diag(row) for row in der])
 
+def leaky_ReLU(z):
+    alpha = 0.01
+    return np.where(z > 0, z, 0) + np.where(z < 0, alpha * z, 0)
+
+def leaky_ReLU_der(z):
+    alpha = 0.01
+    der = np.where(z > 0, 1, 0) + np.where(z < 0, alpha, 0)
+    return np.stack([np.diag(row) for row in der])
+
 def sigmoid(z):
-    return 1 / (1 + np.exp(-z))
+    # if np.any(np.isinf((1 + np.exp(-z)))):
+    #     print("hei")
+    neg = np.where(z < 0, np.exp(z) / (1 + np.exp(z)), 0)
+    pos = np.where(z >= 0, 1 / (1 + np.exp(-z)), 0)
+    return pos + neg
 
 def sigmoid_der(z):
     der = sigmoid(z) * (1 - sigmoid(z))
@@ -107,10 +121,19 @@ def mse_der(predict, target):
     return (2/n) * (predict - target)
 
 def cross_entropy(predict, target):
+    eps = 1e-8
+    predict = np.clip(predict, eps, 1 - eps)
     return np.sum(-target * np.log(predict))
 
+def binary_cross_entropy(predict, target):
+    # Clip predictions to avoid log(0)
+    eps = 1e-8
+    predict = np.clip(predict, eps, 1 - eps)
+    return np.mean(target * np.log(predict) + (1 - target) * np.log(1 - predict))
+
 def cross_entropy_der(predict, target):
-    return -target / predict
+    # predict = np.clip(predict, 1e-7, 1 - 1e-7)
+    return - target / predict
 
 def get_iris_data():
     iris = load_iris()
@@ -118,6 +141,12 @@ def get_iris_data():
     targets = np.zeros((len(iris.data), 3))
     for i, t in enumerate(iris.target):
         targets[i, t] = 1
+    return inputs, targets
+
+def get_cancer_data():
+    iris = load_breast_cancer()
+    inputs = iris.data
+    targets = iris.target
     return inputs, targets
 
 def accuracy(predictions, targets):
@@ -130,5 +159,24 @@ def accuracy(predictions, targets):
 def analytic_grad_OLS(X, beta, y):
     return [(2.0/len(X)) * X.T @ (X @ beta[0] - y)]
 
-def analytic_grad_Ridge(X, y, beta, lmbda):
-    ...
+def cost_OLS(X, beta, y):
+    beta = beta[0]
+    return [mse(X @ beta, y)]
+
+class cost_Ridge:
+    def __init__(self, lmbda):
+        self.lmbda = lmbda
+
+    def __call__(self, X, beta, y):
+        beta = beta[0]
+        return [mse(X @ beta, y) + self.lmbda * (beta.T @ beta)]
+
+class analytic_grad_Ridge:
+    def __init__(self, lmbda):
+        self.lmbda = lmbda
+    
+    def __call__(self, X, beta, y):
+        beta = beta[0]
+        return [2.0 * X.T @ (X @ beta - y) + self.lmbda * beta[0]]
+    
+
