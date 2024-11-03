@@ -121,13 +121,15 @@ def mse_der(predict, target):
     return (2/n) * (predict - target)
 
 def cross_entropy(predict, target):
+    eps = 1e-8
+    predict = np.clip(predict, eps, 1 - eps)
     return np.sum(-target * np.log(predict))
 
 def binary_cross_entropy(predict, target):
     # Clip predictions to avoid log(0)
     eps = 1e-8
     predict = np.clip(predict, eps, 1 - eps)
-    return -np.mean(target * np.log(predict) + (1 - target) * np.log(1 - predict))
+    return np.mean(target * np.log(predict) + (1 - target) * np.log(1 - predict))
 
 def cross_entropy_der(predict, target):
     # predict = np.clip(predict, 1e-7, 1 - 1e-7)
@@ -157,17 +159,24 @@ def accuracy(predictions, targets):
 def analytic_grad_OLS(X, beta, y):
     return [(2.0/len(X)) * X.T @ (X @ beta[0] - y)]
 
-def cost_OLS():
-    ...
+def cost_OLS(X, beta, y):
+    beta = beta[0]
+    return [mse(X @ beta, y)]
 
-def cost_ridge():
-    ...
+class cost_Ridge:
+    def __init__(self, lmbda):
+        self.lmbda = lmbda
+
+    def __call__(self, X, beta, y):
+        beta = beta[0]
+        return [mse(X @ beta, y) + self.lmbda * (beta.T @ beta)]
 
 class analytic_grad_Ridge:
     def __init__(self, lmbda):
         self.lmbda = lmbda
     
     def __call__(self, X, beta, y):
-        return [2.0 * X.T @ (X @ beta[0] - y) + self.lmbda * beta[0]]
+        beta = beta[0]
+        return [2.0 * X.T @ (X @ beta - y) + self.lmbda * beta[0]]
     
 

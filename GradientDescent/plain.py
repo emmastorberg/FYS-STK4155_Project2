@@ -17,9 +17,15 @@ class Plain(GD):
         self.max_iter = max_iter
 
     def gradient_descent(self, input, params, target):
+        if self.tuner is not None:
+            self.m = [0.0] * len(params)
+            self.s = [0.0] * len(params)
+        if self.momentum:
+            self.delta = [0.0] * len(params)
+
+
         i = 0
         # grad_mag = np.inf
-
         # while (i < self.max_iter): # and (grad_mag > self.eps):
         for i in tqdm(range(self.max_iter)):
             gradient = self.gradient(input, params, target)

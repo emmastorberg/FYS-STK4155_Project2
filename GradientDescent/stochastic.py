@@ -10,24 +10,42 @@ class Stochastic(GD):
     def __init__(
             self, 
             lr: float = 0.01,
+            lr_schedule: str = "fixed",
             momentum: Optional[float] = 0.0,
             tuner: Optional[str] = None,
             M: int = 5, 
             n_epochs: int = 50, 
-            t0: int = 5, 
-            t1: int = 50
+            t: int = 50,
+            decay_iter: int = 500,
         ) -> None:
         super().__init__(lr, momentum, tuner)
+        self.lr_schedule = lr_schedule
 
+        lr = 0.0
+        self.lr0 = lr
         self.M = M
         self.n_epochs = n_epochs
-        self.t0 = t0
-        self.t1 = t1
+        self.t = t
+        self.decay_iter = decay_iter
 
-    def learning_schedule(self, t: int) -> float:
-        return self.t0/(t+self.t1)
+        if not (lr_schedule in ["fixed", "linear", "minibatch"]):
+            raise ValueError
+
+    def learning_schedule(self, minibatch, epoch) -> float:
+        if self.lr_schedule == "fixed":
+            return self.lr0
+        elif self.lr_schedule == "linear":
+            kappa = epoch / self.decay_iter
+            return (1 - kappa) * self.lr0 + kappa * self.lr0 * 0.01
+        # elif self.lr_schedule == "minibatch":
+        #     return self.t/(t+self.lr0)
 
     def gradient_descent(self, input, params, target):
+        if self.tuner is not None:
+            self.m = [0.0] * len(params)
+            self.s = [0.0] * len(params)
+        if self.momentum:
+            self.delta = [0.0] * len(params)
         m = len(input) // self.M
         for epoch in tqdm(range(self.n_epochs)):
             m_range = np.arange(0, m)
@@ -36,7 +54,7 @@ class Stochastic(GD):
             for i in m_range:
                 xi = input[i:i+self.M]
                 yi = target[i:i+self.M]
-                self.lr = self.learning_schedule(epoch*m + i)
+                self.lr = self.learning_schedule(epoch*m + i, epoch)
                 gradient = self.gradient(xi, params, yi)
                 params = self.step(gradient, params, epoch)
 

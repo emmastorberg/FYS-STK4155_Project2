@@ -128,13 +128,13 @@ def main():
     # nn interface
 
     network_input_size = 30    # int
-    layer_output_sizes = [1]  # ints of number of neurons per layer
-    activation_funcs = [sigmoid, sigmoid, sigmoid]    # callable per layer
-    activation_ders = [sigmoid_der, sigmoid_der, sigmoid_der]
-    cost_func = utils.binary_cross_entropy
-    cost_der = grad(utils.binary_cross_entropy, 0)
-    # optimizer = Stochastic(lr=0.001, M=150, t0=0.1, t1=1, n_epochs=10000)
-    optimizer = Plain(lr=0.001, max_iter=10000)
+    layer_output_sizes = [8, 10, 4, 2]  # ints of number of neurons per layer
+    activation_funcs = [sigmoid, sigmoid, sigmoid, softmax]    # callable per layer
+    activation_ders = [sigmoid_der, sigmoid_der, sigmoid_der, softmax_der]
+    cost_func = utils.cross_entropy
+    cost_der = grad(utils.cross_entropy, 0)
+    optimizer = Stochastic(lr=0.001, M=150, n_epochs=1000, lr_schedule="linear", tuner="adam")
+    # optimizer = Plain(lr=0.001, max_iter=10000, momentum=0.0, tuner="adam")
     nn = NeuralNetwork(
         network_input_size,
         layer_output_sizes,
@@ -145,27 +145,23 @@ def main():
         optimizer,
         seed=18,
     )
-    W = np.array([-0.1949, -0.0777, -0.1811, -0.1148, -0.0142, -0.2183, -0.1236, -0.2559,
-         -0.0307,  0.0081, -0.0525,  0.0234,  0.0356, -0.0511,  0.1479, -0.0177,
-          0.0491, -0.0476, -0.1273, -0.0868, -0.1759, -0.2689, -0.3187, -0.0961,
-          0.0590, -0.0105, -0.0658, -0.3271,  0.0525, -0.1866]).reshape(-1, 1)
-    
-    b = np.array([-0.0488])
-    nn.layers = [(W, b)]
-    cancer = load_breast_cancer()
-    inputs = cancer.data
-    targets = cancer.target
+    inputs, targets = utils.get_cancer_data()
+
+    target_list = np.empty((len(targets), 2))
+    for i, target in enumerate(targets):
+        if target == 0:
+            target_list[i,:] = [0, 1]
+        else:
+            target_list[i,:] = [1, 0]
+
     x_train, x_test, y_train, y_test = train_test_split(inputs, targets)
     
-
     scaler = StandardScaler()
     x_train = scaler.fit_transform(x_train)
     x_test = scaler.transform(x_test)
-    x_train = x_train[:15,:]
-    y_train = y_train[:15]
-    print(y_train)
-    for elem in x_train:
-        print(elem)
+    nn.train(x_train, y_train)
+    prediction = nn.predict(x_train)
+    print(utils.accuracy(prediction, y_train))
     # print(nn.backpropagation(x_train, y_train))
     
     # inputs, targets = utils.get_iris_data()
