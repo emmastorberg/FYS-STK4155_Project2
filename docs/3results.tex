@@ -46,23 +46,25 @@ Up to this point, we have only looked at OLS. When we use ridge regression inste
 It is difficult to visually determine exactly which method is best, and upon reading off the values numerically, we also found minimal differences in the darkest regions. This is also consistent with the plots, where we see all methods except AdaGrad seem to converge nicely. Therefore, we determine that we will use Adam as we continue to use gradient descent in a neural network, as this seems consistent with the literature on the subject. We will also use $\lambda = 0.00001$.
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figures/placeholders/gridsearch_ridge.png}
+    \includegraphics[width=\linewidth]{figures/all_plots/gridsearch_ridge.png}
     \caption{Grid search table of the seven possible methods compared for different values of the hyperparameter $\lambda$. In all cases, the global learning rate is set to 0.1, the mini-batch size is fixed at 4, and momentum terms are scaled by $\gamma = 0.5$.}
     \label{fig:gridsearch_ridge}
 \end{figure}
 
 \subsection{Numerical Prediction with Neural Network}
-We saw that the optimal gradient descent methods for linear regression were \textcolor{red}{(method)} and \textcolor{red}{(method)}, with $\lambda = \text{\textcolor{red}{(value)}}$ for ridge regression. There is an enormous number of possible neural networks we can create even with only the relatively few gradient descent methods and activation functions at our disposal, in addition to the limitation of computation time. We eliminated a few degrees of freedom here by sticking to \textcolor{red}{(method)} as our gradient descent method (based on its performance in the experiments up to this point), and with ReLU as the activation function for the outer layer, guided by the theoretical intuition of what values it can produce (only positive values; the range of our polynomial $f(x) = 5x^2 + 7x + 3$ is positive real numbers only).
+We saw that the optimal gradient descent methods for linear regression were RMSProp (with and without momentum) and Adam for OLS, and we chose Adam with $\lambda = 0.00001$ as the best-performing combination for ridge regression. There is an enormous number of possible neural networks we can create even with only the relatively few gradient descent methods and activation functions at our disposal, in addition to the limitation of computation time. We eliminated a few degrees of freedom here by sticking to Adam as our gradient descent method (based on its performance in the experiments up to this point), and with ReLU as the activation function for the outer layer, guided by the theoretical intuition of what values it can produce (only positive values; the range of our polynomial $f(x) = 5x^2 + 7x + 3$ is positive real numbers only).
 
-To construct the network, we tried to sequentially eliminate degrees of freedom by fixating certain parameters, and thereafter exploring slight modifications to these. We started by using the same number of nodes per layer, and performing a grid search to find the best combination. The results of this are shown in figure \ref{fig:gridsearch_numpred_layers_nodes}, with sigmoid activating all hidden layers, and ReLU on the output layer.
+To construct the network, we tried to sequentially eliminate degrees of freedom by fixating certain parameters, and thereafter exploring slight modifications to these. We started by using the same number of nodes per layer, and performing a grid search to find the best combination. The results of this are shown in figure \ref{fig:gridsearch_numpred_layers_nodes}, with ReLU activating all hidden layers as well as the output layer.
 \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{figures/placeholders/gridsearch_numpred_layers_nodes.png}
-    \caption{\textcolor{purple}{Heat map showing the MSE for the numerical NN predictions, as a function of hidden layers (1-5) and nodes in each hidden layer (1-10)}}
+    \caption{Grid search table showing the MSE of neural networks with varying number of layers, with a fixed number of nodes per layer. ReLU activates all layers.}
     \label{fig:gridsearch_numpred_layers_nodes}
 \end{figure}
 
-As we can see, a network with \textcolor{red}{(nodes and layers)} works the best out of the options we tested. Next, we tried varying what activation functions to use on the hidden layers. The plot of the resulting MSEs is shown in figure \ref{fig:activationfunctions_cost_numpred}. It seems clear that \textcolor{red}{(activation function)} activating the hidden layers is best in this case, so a neural network with \textcolor{red}{(NN explained here)} became the basis for further modifications in hopes of improving performance. 
+As we can see, there are many options that have low MSEs (dark color). We will choose a network with four nodes and four hidden layers for simplicity. ALso of note is that the lightest sections with high MSE set predict zero everywhere, which is an unexpected finding.  
+
+Next, we tried varying what activation functions to use on the hidden layers. The plot of the resulting MSEs is shown in figure \ref{fig:activationfunctions_cost_numpred}. It seems clear that \textcolor{red}{(activation function)} activating the hidden layers is best in this case, so a neural network with \textcolor{red}{(NN explained here)} became the basis for further modifications in hopes of improving performance. 
 \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{figures/placeholders/activationfunctions_cost_numpred.png}
@@ -240,9 +242,8 @@ As discussed, an alternative to a neural network requiring far less tuning is lo
     \label{fig:logreg}
 \end{figure}
 
-As we can see, the performance of logistic regression alone is relatively poor compared to a neural network. However, we experienced first-hand that it requires much less time to set up and run, which should be taken into account when evaluating these methods.
-
-\textcolor{magenta}{Should not be in report, but we should print accuracy/cf before and after scaling with the StandardScaler. Expect accuracy to increase. We can just cite on of our previous reports on scaling with StandardScaler}
+As we can see, the performance of logistic regression alone is relatively poor compared to a neural network. However, we experienced how it requires much less time to set up and run, which should be taken into account when evaluating these methods.
+%\textcolor{magenta}{Should not be in report, but we should print accuracy/cf before and after scaling with the StandardScaler. Expect accuracy to increase. We can just cite on of our previous reports on scaling with StandardScaler}
 
 
 

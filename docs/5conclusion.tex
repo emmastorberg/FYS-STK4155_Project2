@@ -1,14 +1,7 @@
-In this project, we aimed to..
+The project has given us a solid theoretical and practical introduction to the underlying methods that make neural networks function as they do. However, we also faced issues along the way with complicated implementations.
 
-We did this by ...
+We aimed to create a neural network completely from scratch, including implementing the gradient descent methods that are used in the training process. Through experiments with each subsequent part that was implemented, we were able to produce a network that could perform predict numerical values based on data generated from a polynomial, initialized with \textcolor{red}{(parameters)}. Following these initial tests, we constructed a network that could predict breast cancer data. From a theoretical and empirical standpoint, this should be a task a neural network is well-suited to do, and with the PyTorch implementation we saw solid performance with a neural network with \textcolor{red}{(parameters)}.
 
-This helped us learn more about neural networks and their usage.
+In summary, we are left with an important question: Are neural networks always worth all the tuning they require? Based on our findings, the answer is clearly \emph{no}. Our first use-case, numerical prediction, showed that OLS (implemented with a variety of gradient descent methods) was better suited than our neural network to predict polynomial data. The classification task let us see both sides: While we experienced first-hand how numerical instability and the implementation of the complex algorithms involved in machine learning can lead to hidden errors, we also saw the power of neural networks when we implemented PyTorch and were able to predict breast cancer with \textcolor{red}{(accuracy)}\% accuracy. The neural network outperformed its counterpart logistic regression, at the expense of some degree of explainability and computational time. 
 
-We met some issues along the way...
-
-In summary, we are left with an important question: Are neural networks always worth all the tuning they require? Based on our findings, the answer is clearly \emph{no}. Our first use-case, numerical prediction, showed that OLS was far better suited than our neural network to predict polynomial data. 
-
-The classification task let us see both sides: While we experienced first-hand how numerical instability and the implementation of the complex algorithms involved in machine learning can lead to hidden errors, we also saw the power of neural networks when we implemented PyTorch and were able to predict breast cancer with \textcolor{red}{(accuracy)}\% accuracy. The neural network outperformed its counterpart logistic regression, at the expense of some degree of explainability and computational time. 
-
-We achieved our goal of exploring different usages of neural networks, and have gained more understanding and nuance about the cases in which 
-It is important to tailor the methods used to the specific situation.
+We achieved our goal of exploring the creation and different usages of neural networks, and despite issues with our implementation, we saw how they can be used to predict medical data, and in this way function as a diagnostic tool in the field of medicine. In the process, we gained understanding of the nuances in neural networks, such as the cases in which a neural network may not be the best choice. It is important to tailor the methods used to the specific situation, and weigh the advantages against the risks that are presented.
