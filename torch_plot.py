@@ -15,21 +15,25 @@ torch.manual_seed(2002)
 aesthetic_2D()
 
 class NN(nn.Module):
-        def __init__(self, input_size, node_size, num_hidden_layers, activation_func):
+        def __init__(self, input_size, node_size, num_hidden_layers, activation):
             super(NN, self).__init__()
 
             self.output = nn.Linear(node_size, 1) #output
             self.layers = nn.ModuleList()
             self.layers.append(nn.Linear(input_size, node_size))  #Input
-            
+            self.activation_func = None 
+
+            if activation == 'relu':
+                self.activation_func = nn.ReLU()
+            elif activation == 'leaky_relu':
+                self.activation_func = nn.LeakyReLU()
+            elif activation == 'sigmoid':
+                self.activation_func = nn.Sigmoid()
+            else:
+                raise ValueError
 
             for _ in range(num_hidden_layers):
                 self.layers.append(nn.Linear(node_size, node_size))
-
-            if activation_func not in [torch.relu, torch.sigmoid]: #nn.LeakyReLU
-                raise ValueError("Activation function must be either torch.relu, torch.leaky_relu, or torch.sigmoid.")
-            
-            self.activation_func = activation_func
 
         def forward(self, x):
             for layer in self.layers:
@@ -59,7 +63,7 @@ def gridsearch_pytorch(X_train_tensor, X_test_tensor, y_train_tensor, y_test_ten
 
     for node_size in range(1, 100, 10):
         for num_hidden_layers in [1, 2, 3, 4, 5]:#, 6, 7, 8, 9, 10]:
-            for activation_func in [torch.relu]: # nn.LeakyReLU
+            for activation_func in ["leaky_relu"]: # nn.LeakyReLU
                 model = NN(input_size, node_size, num_hidden_layers, activation_func)
 
                 # Training loop
@@ -103,9 +107,62 @@ def gridsearch_pytorch(X_train_tensor, X_test_tensor, y_train_tensor, y_test_ten
     heatmap_data = df_accuracy.pivot(index='num_hidden_layers', columns='node_size', values='accuracy')
     return heatmap_data
 
-def plot_grid_heatmap(df, save=False):
-    sns.heatmap(df, annot=True, cmap='coolwarm')
-    plt.title("Accuracy for Fixed Learning Rate = 0.1, With PyTorch")
+
+def test_activation_pytorch(X_train_tensor, X_test_tensor, y_train_tensor, y_test_tensor, input_size, node_size = 40, num_hidden_layers = 1):
+    criterion = nn.BCELoss()  # Binary Cross-Entropy loss
+    learning_rate = 0.1
+    accuracy_dict = {
+        'activation_func': [],
+        'epoch': [],
+        'accuracy': []
+    }
+
+    for activation_func in ["sigmoid", "leaky_relu", "relu"]: 
+        model = NN(input_size, node_size, num_hidden_layers, activation_func)
+
+        num_epochs = 50
+        for epoch in range(num_epochs):
+
+            # Forward pass
+            outputs = model(X_train_tensor)
+            loss = criterion(outputs, y_train_tensor)
+
+            optimizer = optim.SGD(model.parameters(), lr=learning_rate)
+
+            # Zero the gradients
+            optimizer.zero_grad()
+
+            # Backward pass
+            loss.backward()
+
+            # Update weights
+            optimizer.step()
+
+            # Print loss every 10 epochs
+            if (epoch + 1) % 10 == 0:
+                print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}')
+
+            with torch.no_grad():
+                    test_outputs = model(X_test_tensor)
+                    predicted = (test_outputs > 0.5).float()
+                    accuracy = (predicted.eq(y_test_tensor).sum().item() / y_test_tensor.size(0)) * 100
+        
+            # Append results to the dictionary
+            accuracy_dict['epoch'].append(epoch)
+            accuracy_dict['activation_func'].append(activation_func)
+            accuracy_dict['accuracy'].append(accuracy)
+
+    # Create DataFrame from the dictionary
+    df_accuracy = pd.DataFrame(accuracy_dict)
+
+    # Pivot the DataFrame for heatmap plotting
+    heatmap_data = df_accuracy.pivot(index='epoch', columns='activation_func', values='accuracy')
+    return heatmap_data
+
+def plot_grid_heatmap(df, save=False, annot = True, title=r"Accuracy for Number of Hidden Layers and Nodes, with $\eta = 0.1$"):
+    sns.heatmap(df, annot=annot, cmap='coolwarm')
+    plt.title(title)
+    plt.tight_layout()
     if save:
         plt.savefig("figures/grid_search_layer_nodes.png")
     else:
@@ -132,11 +189,12 @@ def pytorch():
     X_test_tensor = torch.tensor(X_test, dtype=torch.float32)
     y_test_tensor = torch.tensor(y_test, dtype=torch.float32).view(-1, 1)
 
-
     # Initialize the model, loss function, and optimizer
     input_size = X_train.shape[1]
 
-    accuracy_df = gridsearch_pytorch(X_train_tensor, X_test_tensor, y_train_tensor, y_test_tensor, input_size)
+    grid_df = gridsearch_pytorch(X_train_tensor, X_test_tensor, y_train_tensor, y_test_tensor, input_size)
+
+    activation_df = test_activation_pytorch(X_train_tensor, X_test_tensor, y_train_tensor, y_test_tensor, input_size)
 
     node_size = 5
     num_hidden_layers = 5
@@ -179,8 +237,7 @@ def pytorch():
             accuracy = (predicted.eq(y_test_tensor).sum().item() / y_test_tensor.size(0)) * 100
             #print(f'Accuracy on test set: {accuracy:.2f}%')
 
-    return y_test, predicted, accuracy_df
-
+    return y_test, predicted, grid_df, activation_df
 
 
 def plot_cm(target: np.array, predicted: np.array, save = False):
@@ -198,13 +255,25 @@ def plot_cm(target: np.array, predicted: np.array, save = False):
     else:
         plt.show()
 
+def plot_activation(activation_df: pd.DataFrame, save=False):
+    plt.figure(figsize=(10, 6))
+    plt.title(r"Accuracy for Different Activation Functions in the Hidden Layers, with $\eta = 0.1$")
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy")
+    for activation in activation_df.columns:
+        plt.plot(activation_df.index, activation_df[activation], marker='o', label=activation)
+    plt.legend()
+
+    if save:
+        plt.savefig("figures/activationfunctions_cost.png")
+    else:
+        plt.show()
+
 
 if __name__ == "__main__":
-    y_test, predicted, accuracy_df = pytorch()
+    y_test, predicted, accuracy_df, activation_df = pytorch()
     #plot_cm(y_test, predicted, save=False)
-
     plot_grid_heatmap(accuracy_df, save=True)
-
+    plot_activation(activation_df, save=True)
     
-
 
