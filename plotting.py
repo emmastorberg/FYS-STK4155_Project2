@@ -77,29 +77,29 @@ def three_stacked_subplots(epochs: np.ndarray,
     fig, axs = plt.subplots(nrows=3, ncols=1, figsize=(6, 9))
 
     # Plot on the first subplot
-    axs[0].plot(epochs, sgd)
-    axs[0].plot(epochs, sgd_mom)
-    axs[0].plot(epochs, adagrad)
-    axs[0].plot(epochs, adagrad_mom)
+    axs[0].plot(epochs, sgd, label="Stochastic Gradient Descent")
+    axs[0].plot(epochs, sgd_mom, label="Stochastic Gradient Descent with Momentum")
+    axs[0].plot(epochs, adagrad, label="AdaGrad")
+    axs[0].plot(epochs, adagrad_mom, label="AdaGrad with Momentum")
     if plot_lr:
         axs[0].set_ylabel(r"$\eta$")
     else:
         axs[0].set_ylabel("MSE")
 
     # Plot on the second subplot
-    axs[1].plot(epochs, sgd)
-    axs[1].plot(epochs, sgd_mom)
-    axs[1].plot(epochs, rms)
-    axs[1].plot(epochs, rms_mom)
+    axs[1].plot(epochs, sgd, label="Stochastic Gradient Descent")
+    axs[1].plot(epochs, sgd_mom, label="Stochastic Gradient Descent with Momentum")
+    axs[1].plot(epochs, rms, label="RMSProp")
+    axs[1].plot(epochs, rms_mom, label="RMSProp with Momentum")
     if plot_lr:
         axs[1].set_ylabel(r"$\eta$")
     else:
         axs[1].set_ylabel("MSE")
 
     # Plot on the third subplot
-    axs[2].plot(epochs, sgd)
-    axs[2].plot(epochs, sgd_mom)
-    axs[2].plot(epochs, adam)
+    axs[2].plot(epochs, sgd, label="Stochastic Gradient Descent")
+    axs[2].plot(epochs, sgd_mom, label="Stochastic Gradient Descent with Momentum")
+    axs[2].plot(epochs, adam, label="Adam")
     if plot_lr:
         axs[2].set_ylabel(r"$\eta$")
     else:
@@ -119,5 +119,90 @@ def three_stacked_subplots(epochs: np.ndarray,
             plt.savefig("learningsratesGD.png")
         else:
             plt.savefig("MSEGD.png")
+    else:
+        plt.show()
+
+def gridsearch(parameter1, parameter2):
+    ...
+
+def mse_linreg_comparison(
+        epochs: np.ndarray, 
+        ols: np.ndarray, 
+        ridge: np.ndarray, 
+        nn: np.ndarray, 
+        sklearn: np.ndarray,
+        save: bool = False):
+    
+    plt.plot(epochs, ols, label = "OLS")
+    plt.plot(epochs, ridge, label = "Ridge Regression")
+    plt.plot(epochs, nn, label = "Neural Network")
+    plt.plot(epochs, sklearn, label = "Scikit-Learn")
+
+    plt.xlabel("Epochs")
+    plt.ylabel("MSE")
+
+    plt.title("Comparison of Optimal Methods for Polynomial Approximation")
+
+    if save:
+        plt.savefig("numericalprediction.png")
+    else:
+        plt.show()
+
+def accuracy_with_different_activationfuncs_in_hidden_layers(
+        epochs: np.ndarray, 
+        sigmoid: np.ndarray, 
+        softmax: np.ndarray, 
+        relu: np.ndarray, 
+        leakyrelu: np.ndarray,
+        save: bool = False,
+        linear: bool = True
+        ) -> None:
+
+    plt.plot(epochs, sigmoid, label = "Sigmoid")
+    plt.plot(epochs, softmax, label = "Softmax")
+    plt.plot(epochs, relu, label = "ReLU")
+    plt.plot(epochs, leakyrelu, label = "Leaky ReLU")
+
+    plt.xlabel("Epochs")
+
+    if linear:
+        plt.ylabel("MSE")
+        plt.title("Different Activations of Hidden Layers in Numerical Prediction Task")
+
+        if save:
+            plt.savefig("activationfunctions_cost_numpred.png")
+        else:
+            plt.show()
+    else:
+        plt.ylabel("Accuracy")
+        plt.title("Different Activations of Hidden Layers in Classification Task")
+        
+        if save:
+            plt.savefig("activationfunctions_cost.png")
+        else:
+            plt.show()
+
+def prediction_comparison(
+        input: np.ndarray, 
+        target: np.ndarray, 
+        ols_pred: np.ndarray, 
+        ridge_pred: np.ndarray,
+        nn_pred: np.ndarray, 
+        sklearn_pred: np.ndarray,
+        save: bool = False
+        ) -> None:
+
+    plt.plot(input, target, label = "Exact Solution")
+    plt.plot(input, ols_pred, label = "OLS")
+    plt.plot(input, ridge_pred, label = "Ridge Regression")
+    plt.plot(input, nn_pred, label = "Neural Network")
+    plt.plot(input, sklearn_pred, label = "Scikit-Learn")
+
+    plt.xlabel(r"$x$")
+    plt.ylabel(r"$y$")
+    plt.title("Polynomial Approximation with Various Methods")
+    
+    if save:
+        plt.savefig("predictioncomparison.png")
     else:
         plt.show()
