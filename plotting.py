@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from GradientDescent import PlainFixed, StochasticFixed
+from GradientDescent import Plain, Stochastic
 
 plt.rcParams.update({
         # Matplotlib style settings similar to seaborn's default style
@@ -30,14 +30,14 @@ def mse_func_of_epochs(epochs: np.ndarray,
                            analytical: np.ndarray, 
                            fixed_lr: float, 
                            sgd: bool = True,
-                           save: bool = False) -> None:
+                           filename: str | None = None) -> None:
     
     if sgd:
         labels = ["Stochastic Gradient Descent",
                   "Stochastic Gradient Descent with Momentum", 
                   rf"MSE of OLS Using Stochastic Gradient Descent with $\eta_0 = {fixed_lr}$"]
     else:
-        label = ["Plain Gradient Descent", 
+        labels = ["Plain Gradient Descent", 
                  "Plain Gradient with Momentum", 
                  rf"MSE of OLS Using Plain Gradient Descent with $\eta = {fixed_lr}$"]
     
@@ -50,14 +50,15 @@ def mse_func_of_epochs(epochs: np.ndarray,
         plt.xlabel("Epochs")
     else:
         plt.xlabel("Iterations")
+    plt.yscale("log")
     plt.ylabel("MSE")
     plt.legend()
 
-    if save:
+    if filename is not None:
         if sgd:
-            plt.savefig("sgdVSanalytical.png")
+            plt.savefig(filename)
         else:
-            plt.savefig("plainVSanalytical.png")
+            plt.savefig(filename)
     else:
         plt.show()
 
@@ -77,29 +78,32 @@ def three_stacked_subplots(epochs: np.ndarray,
     fig, axs = plt.subplots(nrows=3, ncols=1, figsize=(6, 9))
 
     # Plot on the first subplot
-    axs[0].plot(epochs, sgd, label="Stochastic Gradient Descent")
-    axs[0].plot(epochs, sgd_mom, label="Stochastic Gradient Descent with Momentum")
+    axs[0].plot(epochs, sgd, label="SGD")
+    axs[0].plot(epochs, sgd_mom, label="SGD with Momentum")
     axs[0].plot(epochs, adagrad, label="AdaGrad")
     axs[0].plot(epochs, adagrad_mom, label="AdaGrad with Momentum")
+    axs[0].legend()
     if plot_lr:
         axs[0].set_ylabel(r"$\eta$")
     else:
         axs[0].set_ylabel("MSE")
 
     # Plot on the second subplot
-    axs[1].plot(epochs, sgd, label="Stochastic Gradient Descent")
-    axs[1].plot(epochs, sgd_mom, label="Stochastic Gradient Descent with Momentum")
+    axs[1].plot(epochs, sgd, label="SGD")
+    axs[1].plot(epochs, sgd_mom, label="SGD with Momentum")
     axs[1].plot(epochs, rms, label="RMSProp")
     axs[1].plot(epochs, rms_mom, label="RMSProp with Momentum")
+    axs[1].legend()
     if plot_lr:
         axs[1].set_ylabel(r"$\eta$")
     else:
         axs[1].set_ylabel("MSE")
 
     # Plot on the third subplot
-    axs[2].plot(epochs, sgd, label="Stochastic Gradient Descent")
-    axs[2].plot(epochs, sgd_mom, label="Stochastic Gradient Descent with Momentum")
+    axs[2].plot(epochs, sgd, label="SGD")
+    axs[2].plot(epochs, sgd_mom, label="SGD with Momentum")
     axs[2].plot(epochs, adam, label="Adam")
+    axs[2].legend()
     if plot_lr:
         axs[2].set_ylabel(r"$\eta$")
     else:
@@ -107,12 +111,12 @@ def three_stacked_subplots(epochs: np.ndarray,
     axs[2].set_xlabel("Epochs")
 
     if plot_lr:
-        fig.suptitle(r"Learning Rates of Adaptive Methods ($\eta = {lr})")
+        fig.suptitle(fr"Learning Rates of Adaptive Methods ($\eta = {lr}$)")
     else:
         fig.suptitle("MSE of Adaptive Methods")
 
     # Adjust layout to avoid overlap
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    plt.tight_layout()
 
     if save:
         if plot_lr:

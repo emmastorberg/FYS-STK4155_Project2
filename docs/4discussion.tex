@@ -1,6 +1,6 @@
 \textcolor{blue}{In general, did the results we saw align with the theory? Give a suggestion as to why/why not.}
 
-In general, our results aligned quite with the theory, with a few hiccups in the classification part. In the first part of the project, 
+In general, our results aligned quite with the theory, with a few hiccups in the classification part. In the first part of the project, the found that inclusion of 
 
 First, we saw that our gradient descent methods were less accurate than using the analytical solutions. This makes sense, as they are numerical approximations. 
 
@@ -11,6 +11,8 @@ We also saw that dedicated linear regression methods worked better to predict va
 In the numerical prediction task, ...
 
 \textcolor{blue}{Are neural networks worth all the tuning they require?}
+
+Our goal is to minimize both false positives and false negatives. A false positive means unnecessary distress for the patient and their family, and wasted hospital resources on additional tests. A false negative, however, could be fatal if cancer goes untreated. Therefore, if the confusion matrix shows a high false negative rate, our loss function should be modified to penalize false negatives more heavily
 
 \subsection{Limitation of methods}
 Neural networks requires vast computational resources compared to regression methods. Wee see that the runtime increases significantly for our neural net compared to our logistic regression. \\
