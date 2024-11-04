@@ -12,9 +12,9 @@ We began with the most simple method, plain gradient descent, which we used with
 
 Next, we looked at our stochastic methods, with and without momentum. In this case we tried a linearly decaying learning rate to see if we would have any major improvements over plain gradient descent. In this case, the linearly decaying learning rate used was:
 \[
-\eta_t = (1- \frac{t}{5})0.01 + \frac{t}{5} 0.0001
+\eta_t = (1- \frac{t}{5})0.1 + \frac{t}{5} 0.001
 \]
-where we found the value $\eta_0 = 0.1$ after a few tests, as well as consulting the literature. We also kept the mini-batch size fixed at 4, which we found to produce decent values in this case. The comparison of the MSE with and without momentum as a function of epochs is displayed in figure \ref{fig:sgdVSanalytical}. 
+where we found the value $\eta_0 = 0.1$ after a few tests, as well as consulting the literature. We also kept the mini-batch size fixed at 4, which we found produced decent values in this case. The comparison of the MSE with and without momentum as a function of epochs is displayed in figure \ref{fig:sgdVSanalytical}. 
 \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{figures/all_plot/sgd_mse_pr_epoch_eta_1e-1.png}
