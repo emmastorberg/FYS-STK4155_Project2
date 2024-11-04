@@ -1,0 +1,5 @@
+The softmax function takes a vector $\boldsymbol z = (z_1, ..., z_K) \in \mathbb{R}^K$ and maps it to $(0,1)^K$, such that the $i$th entry of the resulting vector is given by:
+\[\text{Softmax}(\boldsymbol z)_i = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}.\]
+We interpret this as \textcolor{blue}{``[applying] the standard exponential function to each element $z_{i}$ of the input vector $\boldsymbol z$ (consisting of $K$ real numbers), and [normalizing] these values by dividing by the sum of all these exponentials'' \cite{softmax}.}
+
+The softmax function works well for predictions representing the likelihood of more than two different options, since the normalization ensures the entries in the output layer all add up to 1 \cite{softmax}. 
