@@ -3,8 +3,11 @@ import matplotlib.pyplot as plt
 from autograd import grad
 from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.metrics import accuracy_score, log_loss
+import torch
+import torch.nn as nn
+import torch.optim as optim
 
 from GradientDescent import Plain, Stochastic
 from neural_network import NeuralNetwork
@@ -12,9 +15,6 @@ from logistic_regression import LogisticRegression
 import utils
 from utils import sigmoid, sigmoid_der, mse, mse_der, softmax, softmax_der, ReLU, ReLU_der
 
-import torch
-import torch.nn as nn
-import torch.optim as optim
 
 def pytorch():
     # Load breast cancer dataset
@@ -106,35 +106,35 @@ def pytorch():
 
 
 def main():
-    # gd interface
+    data_set = "cancer" # "cancer", "iris" or "heart"
+    if data_set == "cancer":
+        network_input_size = 30
+        # layer_output_sizes = [8, 50, 50, 1] # [8, 10, 6, 1]
+        n_layers = 3
+        layer_output_sizes = [15] * (n_layers-1) + [1]
+        # activation_funcs = [sigmoid, sigmoid, sigmoid, sigmoid]
+        activation_funcs = [sigmoid] * n_layers
+        activation_ders = [sigmoid_der] * n_layers
+        # activation_ders = [grad(act) for act in activation_funcs]
+        # activation_ders = [sigmoid_der] * n_layers
+        cost_func = utils.cross_entropy
+        cost_der = utils.cross_entropy_der
+        #cost_der = grad(cost_func, 0)
 
-    # cost = mse # callable C(predict, target)
-    # cost_der = utils.analytic_grad_OLS # callable, for linear regression: cost_grad(X, y, beta): return lambda beta: {some expression here}
-    # optimizer = Stochastic(lr = 0.0001, n_epochs=10000, M=2, momentum=0.3) # should work with Stochastic as well
-    # x = np.random.randn(10)
-    # X = np.zeros((len(x), 3))
-    # X[:,0] = 1
-    # X[:,1] = x
-    # X[:,2] = x**2
+    elif data_set == "iris":
+        pass
 
-    # y = 3*x**2 + 2*x + 4
+    elif data_set == "heart":
+        network_input_size = 8
+        n_layers = 3
+        layer_output_sizes = [25] * (n_layers-1) + [2]
+        activation_funcs = [sigmoid] * n_layers
+        activation_ders = [sigmoid_der] * n_layers
+        cost_func = utils.binary_cross_entropy
+        cost_der = grad(cost_func, 0)
 
-
-    # optimizer.set_gradient(cost_der)
-    # beta = [np.random.randn(3)]
-    # beta = optimizer.gradient_descent(X, beta, y)
-    # print(beta)
-
-    # nn interface
-
-    network_input_size = 30    # int
-    layer_output_sizes = [8, 10, 4, 2]  # ints of number of neurons per layer
-    activation_funcs = [sigmoid, sigmoid, sigmoid, softmax]    # callable per layer
-    activation_ders = [sigmoid_der, sigmoid_der, sigmoid_der, softmax_der]
-    cost_func = utils.cross_entropy
-    cost_der = grad(utils.cross_entropy, 0)
-    optimizer = Stochastic(lr=0.001, M=150, n_epochs=1000, lr_schedule="linear", tuner="adam")
-    # optimizer = Plain(lr=0.001, max_iter=10000, momentum=0.0, tuner="adam")
+    # optimizer = Stochastic(lr=0.001, M=10, n_epochs=1000, lr_schedule="linear", tuner="adam")
+    optimizer = Plain(lr=0.01, max_iter=10000)
     nn = NeuralNetwork(
         network_input_size,
         layer_output_sizes,
@@ -147,60 +147,24 @@ def main():
     )
     inputs, targets = utils.get_cancer_data()
 
-    target_list = np.empty((len(targets), 2))
-    for i, target in enumerate(targets):
-        if target == 0:
-            target_list[i,:] = [0, 1]
-        else:
-            target_list[i,:] = [1, 0]
-
+    # new_targets = np.empty((len(targets), 2))
+    # for i, target in enumerate(targets):
+    #     if target == 1:
+    #         new_targets[i, :] = [1, 0]
+    #     else:
+    #         new_targets[i, :] = [0, 1]
+    
+    # targets = new_targets
     x_train, x_test, y_train, y_test = train_test_split(inputs, targets)
     
-    scaler = StandardScaler()
+    scaler = MinMaxScaler()
     x_train = scaler.fit_transform(x_train)
     x_test = scaler.transform(x_test)
+
     nn.train(x_train, y_train)
     prediction = nn.predict(x_train)
-    print(utils.accuracy(prediction, y_train))
-    # print(nn.backpropagation(x_train, y_train))
-    
-    # inputs, targets = utils.get_iris_data()
-
-    # # inputs = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-    # # targets = np.array([[0], [1], [1], [0]])
-
-    # nn.train(x_train, y_train)
-    # prediction = nn.predict(x_train)
-    # for pred, targ in zip(prediction, y_train):
-    #     print(f"prediction: {pred[0]}       target: {targ}")
-    # print(utils.cross_entropy(prediction, y_train))
-    # print(f"accuracy: {accuracy_score(targets, prediction)}")
-    
-    # print(f"accuracy: {utils.accuracy(prediction, targets)}")
-    # print(prediction)
-    # print(targets)
-    # print(f"accuracy: {utils.accuracy(prediction, targets)}")
-    # cancer = load_breast_cancer()
-    # inputs = cancer.data
-    # targets = cancer.target
-
-    # logreg = LogisticRegression(30, 1, Stochastic(n_epochs=500, M=3, t0=0.01, t1=10))
-    # logreg.train(inputs, targets)
-    # layers = logreg.layers
-    # prediction = logreg.predict(inputs)
-    # print(prediction)
-    # print(f"accuracy: {utils.accuracy(prediction, targets)}")
-
-
-    # new_target = np.empty((len(targets), 2))
-    # for i, target in enumerate(targets):
-    #     if target == 0:
-    #         new_target[i,:] = np.array([1, 0])
-    #     else:
-    #         new_target[i,:] = np.array([0, 1])
-
-    # targets = new_target
-
+    print(prediction)
+    print(f"accuracy: {utils.accuracy(prediction, y_train)}")
 
 
 if __name__ == "__main__":

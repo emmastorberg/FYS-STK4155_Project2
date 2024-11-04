@@ -1,6 +1,7 @@
 from typing import Optional
 
-from tqdm import tqdm # type: ignore
+from tqdm import tqdm
+import autograd.numpy as np
 
 from .gradient_descent import GD
 
@@ -23,13 +24,13 @@ class Plain(GD):
         if self.momentum:
             self.delta = [0.0] * len(params)
 
-
         i = 0
         # grad_mag = np.inf
-        # while (i < self.max_iter): # and (grad_mag > self.eps):
-        for i in tqdm(range(self.max_iter)):
-            gradient = self.gradient(input, params, target)
-            params = self.step(gradient, params, i)
-            # grad_mag = np.linalg.norm(np.sum(gradient), ord=2)
-            # i += 1
+        with tqdm(total=self.max_iter) as pbar:
+            while (i < self.max_iter):#  and (grad_mag > self.eps):
+                gradient = self.gradient(input, params, target)
+                params = self.step(gradient, params, i)
+                # grad_mag = np.max([np.linalg.norm(grad) for grad in gradient])
+                i += 1
+                pbar.update()
         return params
