@@ -199,7 +199,7 @@ Calculating outputs based on the original input in this way is the known as \emp
 The expressions above also make clear the significance of having non-linear activation functions: Any linear operations applied as activation functions as we move from layer to layer would allow us to rearrange the expression such that we form a single weight matrix with a bias added –– effectively reducing the network to one layer. Only with non-linear activation functions can we take advantage of the sequential computation of the layers and the additional capabilities this grants the neural network in terms of computational power and pattern recognition.
 
 \subsubsection{Activation Functions}
-In this report, we are primarily considering four different activation functions: the sigmoid function (denoted by $\sigma$) \cite{sigmoid}, the ReLU\footnote{Rectified Linear Unit} and Leaky ReLU (ReLU$_\text{L}$) functions \cite{ReLU}, as well as the softmax function \cite{softmax}. The first three are defined as follows:
+In this report, we are primarily considering three different activation functions: the sigmoid function (denoted by $\sigma$) \cite{sigmoid}, and the ReLU\footnote{Rectified Linear Unit} and Leaky ReLU (ReLU$_\text{L}$) functions. \cite{ReLU}. They are defined as follows:
 \[\sigma(z) = \frac{1}{1 + e^{-z}}\]
 \[\text{ReLU}(z) = \max(0, z)\]
 \begin{equation*}
@@ -210,15 +210,11 @@ In this report, we are primarily considering four different activation functions
 \end{cases}
 \end{equation*}
 
-while the softmax function takes a vector $\boldsymbol z = (z_1, ..., z_K) \in \mathbb{R}^K$ and maps it to $(0,1)^K$, such that the $i$th entry of the resulting vector is given by:
-\[\text{Softmax}(\boldsymbol z)_i = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}.\]
-We interpret this as \textcolor{blue}{``[applying] the standard exponential function to each element $z_{i}$ of the input vector $\boldsymbol z$ (consisting of $K$ real numbers), and [normalizing] these values by dividing by the sum of all these exponentials'' \cite{softmax}.} 
-
-As we have touched upon, these activation functions play a role in the calculation of an output, which they can impact in a variety of ways to help produce predictions that correctly represent the datasets and the task in question. For instance, the sigmoid and softmax functions both map input values to $(0,1)$, and can in this way better represent probabilities than ReLU and Leaky ReLU can. The softmax function, in particular, works well for predictions representing the likelihood of more than two different options, since the normalization ensures the entries in the output layer all add up to 1 \cite{softmax}. 
+As we have touched upon, these activation functions play a role in the calculation of an output, which they can impact in a variety of ways to help produce predictions that correctly represent the datasets and the task in question. For instance, the sigmoid function maps input values to $(0,1)$, and can in this way better represent probabilities than ReLU and Leaky ReLU can. 
 
 For numerical predictions on the other hand, it makes more sense to apply a function like ReLU to the output layer. ReLU has many advantages related to computational speed and convergence rate, since it will always have a gradient of either or 0 or 1, which can be calculated quickly \cite{mediumReLU} (we will soon revisit why this is significant). ReLU's tendency to set many activations to 0 leads to a sparsity in its outputs, which can also aid in avoiding \emph{overfitting}, a concept we have previously discussed in detail \cite{fysstkproject1}. 
 
-Still, depending on the dataset, this quality may be a disadvantage. Unlike sigmoid and softmax, ReLU has completely unbounded outputs, which can lead to instability \cite{mediumReLU}. Additionally, datasets with many negative values will have many nodes evaluate to zero with the use of ReLU. This is sometimes referred to as having ``dead neurons'' \cite{mediumReLU}, which will halt the training process by setting gradients to 0, hindering the computational ability of the network. Leaky ReLU can offer a compromise in cases like these: Instead of removing negative values entirely, it will scale them by a factor of $10^{-2}$, allowing a small positive gradient to mitigate the vanishing gradient problem \cite{ReLU}.
+Still, depending on the dataset, this quality may be a disadvantage. Unlike sigmoid, ReLU has completely unbounded outputs, which can lead to instability \cite{mediumReLU}. Additionally, datasets with many negative values will have many nodes evaluate to zero with the use of ReLU. This is sometimes referred to as having ``dead neurons'' \cite{mediumReLU}, which will halt the training process by setting gradients to 0, hindering the computational ability of the network. Leaky ReLU can offer a compromise in cases like these: Instead of removing negative values entirely, it will scale them by a factor of $10^{-2}$, allowing a small positive gradient to mitigate the vanishing gradient problem \cite{ReLU}.
 
 \subsubsection{Training the Network}
 Up to this point, we have explored the inner structure of a neural network, and seen how an output can be produced through a series of both linear and non-linear operations. In practice, we typically initialize the weight matrices with random numbers (usually drawn from some probability distribution; we will use \textcolor{magenta}{uniform}), and bias vectors with some small value (for instance 0.01) \cite{MHJweek42}. We will follow this approach, but we are missing a crucial element: Although we can now compute an output by feeding forward an input, we have no reason to think this prediction will be any good with the weights and biases set as described. 
@@ -247,16 +243,15 @@ with analogous calculations of the bias gradients $\frac{\partial C}{\partial \b
 The important observation we make here is that many of the factors used to find these gradients are reused in the gradients of both layers. Backpropagation takes advantage of this to calculate the gradients of every single weight and bias efficiently in one backwards traversal of the network, starting with the gradient at the output node. Intuitively, we can view backpropagation as combining the effect of each operation on the intermediary outputs to see how changes to some specific weights or biases impact the final cost, which, again, is what we aim to minimize. 
 
 In short, backpropagation works by first calculating the cost at the output layer using the cost function $C$, and propagating the cost backwards through the network, layer by layer, progressively computing the gradients of all operations we do along the way. Once the gradients are calculated, we can use them to incrementally move the cost towards a minimum by updating the weights and biases appropriately, which will in turn update the final output that we started with. The training process involves iteratively performing forward propagation to find an output, computing the cost in the output layer, backpropagating this cost, and updating the weights and biases accordingly in the direction of a lower cost. We continue doing this until the network's performance on the testing dataset meets some condition, such as a gradient that is lower than some tolerance (in our case $10^{-8}$), or simply some upper limit to the number of iterations we are willing to do (1000 for us).
+% \subsubsection{Implementation of Numerical Prediction Task} % Linear Regression Task specifically, but uglier title because it's too long for the line
+% As discussed, following the tests of the gradient descent methods, we will train a network to do a numerical prediction of the optimal parameters to use for linear regression. In doing so, we will use the aforementioned forward- and backpropagation algorithms with a neural network initialized in the following way:\\
 
-\subsubsection{Implementation of Numerical Prediction Task} % Linear Regression Task specifically, but uglier title because it's too long for the line
-As discussed, following the tests of the gradient descent methods, we will train a network to do a numerical prediction of the optimal parameters to use for linear regression. In doing so, we will use the aforementioned forward- and backpropagation algorithms with a neural network initialized in the following way:\\
+% \begin{lstlisting}[language=Python, label={lst:initializeNN}, caption=Initialization of a neural network used for a numerical prediction of linear regression coefficients.]
+%     print("Hello, world!")
 
-\begin{lstlisting}[language=Python, label={lst:initializeNN}, caption=Initialization of a neural network used for a numerical prediction of linear regression coefficients.]
-    print("Hello, world!")
-
-    #Add listing describing neural network initialization for numerical prediction of linear regression coefficients.
-\end{lstlisting}
-As we see in listing \ref{lst:initializeNN} above, \textcolor{magenta}{(add details about code implementation here when finished)}.
+%     #Add listing describing neural network initialization for numerical prediction of linear regression coefficients.
+% \end{lstlisting}
+% As we see in listing \ref{lst:initializeNN} above, \textcolor{magenta}{(add details about code implementation here when finished)}.
 
 \subsubsection{Classification Tasks and Logistic Regression}
 One common usage of neural networks is for classification tasks \cite{metanaClassificationTasks}. By this, we mean problems in which data points need to be placed in discrete categories, such as the focus of this report, the Wisconsin Breast Cancer Dataset \cite{sklearnBreastCancerData}. Our goal is to correctly distinguish between the patients in the dataset with and without breast cancer.  
@@ -265,7 +260,7 @@ The dataset consists of labeled data from 569 patients, with 30 features to aid 
 
 Since we are now using our neural network for another type of task, some changes should be made to its implementation to reflect this. One difference is the output of the network and how we might interpret it. Compared to what we have seen previously, a more natural output structure is to have output nodes corresponding to each of the categories, and let each node return the probability of some input being identified as that category. The category associated with the highest probability will then be the classification of the data point input, thus categorizing the dataset. 
 
-Additionally, sigmoid or softmax are the best-suited activations for the final layer, as we would like to interpret the output of each node as a probability. These functions will only return values between 0 and 1, supporting this interpretation, with a value close to 1 meaning the associated category is a likely choice for the input, and values close to 0 meaning it is not. 
+Additionally, sigmoid is the best-suited activation for the final layer, as we would like to interpret the output of each node as a probability. It will only return values between 0 and 1, supporting this interpretation, with a value close to 1 meaning the associated category is a likely choice for the input, and values close to 0 meaning it is not. 
 
 Another change is the cost function itself. In the classification case, it makes more sense to consider something like \emph{cross-entropy} rather than the MSE. The expression for the cross-entropy is shown below:
 \[ C(\theta) = -\frac{1}{n}\sum_{i=1}^n \sum_{j=1}^m y_{ij} \log(\hat{y}_{ij}) \]
@@ -283,9 +278,8 @@ A \emph{confusion matrix} is a handy tool for visually separating predictions in
 %SUBHEADING LOGISTIC REGRESSION WAS PREVIOUSLY HERE
 Another test of the neural network's performance is comparing its classification to that of a \emph{logistic regression} model, which is given by the expression below.
 \[p(x) = \frac{1}{1 + e^{-x}}\]
-Logistic regression is an example of a \emph{soft classifier}, meaning it will return a value between 0 and 1 that we interpret as the probability that a data point $x$ belongs to one of the binary categories $y \in \{0,1\}$ \cite{MHJlogisticregression}. For us, outputs close to 0 represent a low likelihood of the patient having cancer, and outputs close to 1 represent a high likelihood.
-
-Also of note is the fact that this is clearly the sigmoid function! Since we want to use our gradient descent methods in the logistic regression, we can use our existing code to implement it by initializing a neural network with no hidden layers, activated by the sigmoid function. %A code snippet showing the implementation can be seen in listing \ref{lst:logregimplementation} below.
+Logistic regression\footnote{Logistic regression is described by a function we have already seen, namely the sigmoid function. We will implement it by initializing a neural network with no hidden layers, activated by sigmoid.} is an example of a \emph{soft classifier}, meaning it will return a value between 0 and 1 that we interpret as the probability that a data point $x$ belongs to one of the binary categories $y \in \{0,1\}$ \cite{MHJlogisticregression}. For us, outputs close to 0 represent a low likelihood of the patient having cancer, and outputs close to 1 represent a high likelihood.
+%Also, this is clearly the sigmoid function. Since we want to use our gradient descent methods in the logistic regression, we will implement it by initializing a neural network with no hidden layers, activated by sigmoid. %A code snippet showing the implementation can be seen in listing \ref{lst:logregimplementation} below.
 % \begin{lstlisting}[language=Python, label={lst:logregimplementation}, caption=Initialization of logistic regression as a single-layer neural network activated by the sigmoid function.]
 %     print("Hello, world!")
 
