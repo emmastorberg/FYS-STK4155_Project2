@@ -155,7 +155,6 @@ def mse_linreg_comparison(
 def accuracy_with_different_activationfuncs_in_hidden_layers(
         epochs: np.ndarray, 
         sigmoid: np.ndarray, 
-        softmax: np.ndarray, 
         relu: np.ndarray, 
         leakyrelu: np.ndarray,
         save: bool = False,
@@ -163,9 +162,9 @@ def accuracy_with_different_activationfuncs_in_hidden_layers(
         ) -> None:
 
     plt.plot(epochs, sigmoid, label = "Sigmoid")
-    plt.plot(epochs, softmax, label = "Softmax")
     plt.plot(epochs, relu, label = "ReLU")
     plt.plot(epochs, leakyrelu, label = "Leaky ReLU")
+    plt.legend()
 
     plt.xlabel("Epochs")
 
@@ -182,7 +181,7 @@ def accuracy_with_different_activationfuncs_in_hidden_layers(
         plt.title("Different Activations of Hidden Layers in Classification Task")
         
         if save:
-            plt.savefig("activationfunctions_cost.png")
+            plt.savefig("figures/all_plots/activationfunctions_cost.png")
         else:
             plt.show()
 

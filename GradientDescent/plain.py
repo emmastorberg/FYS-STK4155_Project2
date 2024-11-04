@@ -46,7 +46,10 @@ class Plain(GD):
                     low_grad_counter = 0
 
                 if self.save_info_per_iter:
-                    self.info[i] = np.copy(params[0])
+                    if len(params) == 1:
+                        self.info[i] = np.copy(params[0])
+                    else:
+                        self.info[i] = params.copy()
                     if low_grad_counter == 10:
                         self.info[i+1:] = [np.copy(params[0])] * (self.max_iter - i)
 
