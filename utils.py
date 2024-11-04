@@ -192,9 +192,10 @@ def accuracy(predictions, targets):
         one_hot_predictions[i, np.argmax(prediction)] = 1
     return accuracy_score(one_hot_predictions, targets)
 
+def analytic_beta_OLS(X, y):
+    return np.linalg.inv(X.T @ X) @ X.T @ y
+
 def analytic_grad_OLS(X, beta, y):
-    print(f"X: {X}")
-    print(f"beta: {beta[0]}")
     return [(2.0/len(X)) * X.T @ (X @ beta[0] - y)]
 
 def cost_OLS(X, beta, y):

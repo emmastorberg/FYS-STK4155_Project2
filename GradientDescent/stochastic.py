@@ -16,15 +16,16 @@ class Stochastic(GD):
             M: int = 5, 
             n_epochs: int = 50, 
             decay_iter: int = 500,
+            save_info_per_iter: bool = False,
         ) -> None:
         super().__init__(lr, momentum, tuner)
         self.lr_schedule = lr_schedule
 
-        lr = 0.0
         self.lr0 = lr
         self.M = M
         self.n_epochs = n_epochs
         self.decay_iter = decay_iter
+        self.save_info_per_iter = save_info_per_iter
 
         if not (lr_schedule in ["fixed", "linear"]):
             raise ValueError
@@ -44,6 +45,9 @@ class Stochastic(GD):
             self.s = [0.0] * len(params)
         if self.momentum:
             self.delta = [0.0] * len(params)
+        if self.save_info_per_iter:
+            self.info = [0] * self.n_epochs
+
         m = len(input) // self.M
         for epoch in tqdm(range(self.n_epochs)):
             m_range = np.arange(0, m)
@@ -55,6 +59,10 @@ class Stochastic(GD):
                 self.lr = self.learning_schedule(epoch*m + i, epoch)
                 gradient = self.gradient(xi, params, yi)
                 params = self.step(gradient, params, epoch)
+
+            if self.save_info_per_iter:
+                # print(params)
+                self.info[epoch] = np.copy(params[0])
 
         return params
         

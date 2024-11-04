@@ -106,7 +106,7 @@ def pytorch():
 
 
 def main():
-    data_set = "cancer" # "cancer", "iris" or "heart"
+    data_set = "iris" # "cancer", "iris" or "heart"
     if data_set == "cancer":
         network_input_size = 30
         # layer_output_sizes = [8, 50, 50, 1] # [8, 10, 6, 1]
@@ -122,7 +122,12 @@ def main():
         #cost_der = grad(cost_func, 0)
 
     elif data_set == "iris":
-        pass
+        network_input_size = 4
+        layer_output_sizes = [8, 10, 6, 3]
+        activation_funcs = [sigmoid, sigmoid, sigmoid, softmax]
+        activation_ders = [sigmoid_der, sigmoid_der, sigmoid_der, softmax_der]
+        cost_func = utils.cross_entropy
+        cost_der = grad(utils.cross_entropy, 0)
 
     elif data_set == "heart":
         network_input_size = 8
@@ -134,7 +139,7 @@ def main():
         cost_der = grad(cost_func, 0)
 
     # optimizer = Stochastic(lr=0.001, M=10, n_epochs=1000, lr_schedule="linear", tuner="adam")
-    optimizer = Plain(lr=0.01, max_iter=10000)
+    optimizer = Plain(lr=0.001, max_iter=10000)
     nn = NeuralNetwork(
         network_input_size,
         layer_output_sizes,
@@ -145,7 +150,7 @@ def main():
         optimizer,
         seed=18,
     )
-    inputs, targets = utils.get_cancer_data()
+    inputs, targets = utils.get_iris_data()
 
     # new_targets = np.empty((len(targets), 2))
     # for i, target in enumerate(targets):
@@ -157,13 +162,15 @@ def main():
     # targets = new_targets
     x_train, x_test, y_train, y_test = train_test_split(inputs, targets)
     
-    scaler = MinMaxScaler()
+    scaler = StandardScaler()
     x_train = scaler.fit_transform(x_train)
     x_test = scaler.transform(x_test)
 
     nn.train(x_train, y_train)
     prediction = nn.predict(x_train)
-    print(prediction)
+    for pred, true in zip(prediction, y_train):
+        print(pred, true)
+    # print(prediction)
     print(f"accuracy: {utils.accuracy(prediction, y_train)}")
 
 
