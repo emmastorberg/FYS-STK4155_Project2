@@ -285,13 +285,12 @@ Another test of the neural network's performance is comparing its classification
 \[p(x) = \frac{1}{1 + e^{-x}}\]
 Logistic regression is an example of a \emph{soft classifier}, meaning it will return a value between 0 and 1 that we interpret as the probability that a data point $x$ belongs to one of the binary categories $y \in \{0,1\}$ \cite{MHJlogisticregression}. For us, outputs close to 0 represent a low likelihood of the patient having cancer, and outputs close to 1 represent a high likelihood.
 
-Also of note is the fact that this is clearly the sigmoid function! Since we want to use our gradient descent methods in the logistic regression, we can use our existing code to implement it by initializing a neural network with no hidden layers, activated by the sigmoid function. A code snippet showing the implementation can be seen in listing \ref{lst:logregimplementation} below.
+Also of note is the fact that this is clearly the sigmoid function! Since we want to use our gradient descent methods in the logistic regression, we can use our existing code to implement it by initializing a neural network with no hidden layers, activated by the sigmoid function. %A code snippet showing the implementation can be seen in listing \ref{lst:logregimplementation} below.
+% \begin{lstlisting}[language=Python, label={lst:logregimplementation}, caption=Initialization of logistic regression as a single-layer neural network activated by the sigmoid function.]
+%     print("Hello, world!")
 
-\begin{lstlisting}[language=Python, label={lst:logregimplementation}, caption=Initialization of logistic regression as a single-layer neural network activated by the sigmoid function.]
-    print("Hello, world!")
-
-    #Add listing describing initialization of logistic regression with neural network code.
-\end{lstlisting}
+%     #Add listing describing initialization of logistic regression with neural network code.
+% \end{lstlisting}
 
 % TEXT ALREADY ADDED ABOUT NEURAL NETWORKS:
 % Neural networks are computational models inspired by the human brain, designed to recognize patterns and solve complex problems. They consist of interconnected processing elements called neurons (or nodes), organized into layers. These networks can learn from data, making them powerful tools for tasks such as classification, regression, and clustering.\\
