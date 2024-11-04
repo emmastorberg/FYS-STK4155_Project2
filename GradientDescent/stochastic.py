@@ -62,7 +62,6 @@ class Stochastic(GD):
                 params = self.step(gradient, params, epoch)
 
             if self.save_info_per_iter:
-                # print(params)
                 self.info[epoch] = np.copy(params[0])
 
         return params
