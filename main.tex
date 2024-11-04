@@ -1,0 +1,177 @@
+\documentclass[twocolumn, twoside, 10pt]{article}
+
+%---------------- PACKAGES ------------------
+\usepackage{graphicx}                   % images
+\usepackage[font=small, labelfont=bf]{caption}
+\usepackage{titlesec}                   % customize section titles
+\usepackage{textcase}                   % uppercase transformation
+\usepackage{xcolor}                     % colored text
+\usepackage{parskip}                    % remove indents as default
+\usepackage[style=numeric, sorting=none]{biblatex}    % bibliography
+\usepackage{booktabs}
+\usepackage{amsmath}                    % certain symbols
+\usepackage{amssymb}                    % certain symbols
+\usepackage{abstract}                   % abstract formatting
+\usepackage{changepage}                 % adjust margins
+\usepackage{fancyhdr}                   % make pretty header
+\usepackage{url}                        % pretty urls
+\usepackage{hyperref}    
+\usepackage{subcaption}
+\usepackage[subfigure]{tocloft}         % add dots in TOC
+\usepackage[export]{adjustbox}          % placing figures where i want them
+\usepackage{lipsum}                     % filler text
+\usepackage{etoolbox}                   % programming LaTeX commands
+\usepackage{listings}                   % pretty code
+\usepackage{float}                      % force latex to listen to me for once
+\usepackage{afterpage}                  % blank pages
+
+
+%---------- STYLISTIC SPECIFICATIONS ---------
+\addbibresource{docs/bibliography.bib}   % necessary for bibliography to work
+
+% Customizing table of contents
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+\setlength{\parindent}{0pt}  % no indent by default
+\setlength{\parskip}{1em}
+\setlength{\footskip}{50pt}
+
+\author{Iris Bore, Frida Lien \& Emma Storberg}
+\date{\today}
+
+% Customization for abstract:
+\renewcommand{\abstractname}{\large\textbf{Abstract}} 
+\renewcommand{\absnamepos}{center}
+
+% Set header style
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\hrulefill}
+\fancyfoot[RO, LE]{\thepage}
+
+% making pretty code with these style specs:
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    %numbers=left,                    
+    %numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% Define a new command for lstinline with normalsize in captions
+\newcommand{\mylstinline}[1]{\textnormal{\normalsize\lstinline!#1!}}
+
+% blank page command
+\newcommand\blankpage{%
+    \null
+    \thispagestyle{empty}%
+    \addtocounter{page}{-1}%
+    \newpage}
+
+%---------------CUSTOM COMMANDS---------------
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+%-------------- DOCUMENT BEGINS --------------
+\begin{document}
+\pagenumbering{gobble}   % no page numbers
+
+% title page (page 1)
+\twocolumn[
+\begin{center}
+\begin{adjustwidth}{2cm}{2cm}
+\vspace{0.5cm}
+\title{Exploring Gradient Descent Methods for Neural Network Applications: A Case Study on Breast Cancer Prediction}
+\maketitle
+\end{adjustwidth}
+\vspace{1cm}
+\begin{abstract}
+\vspace{0.5cm}
+  \input{docs/0abstract}
+\end{abstract}
+\vspace{1cm}
+\end{center}
+]
+% \afterpage{\blankpage}
+% \textcolor{white}{Hope you enjoy the text! Sorry it's so long...}
+
+%blank page (page 2) (comment in when desired)
+% \newpage
+% \thispagestyle{empty}
+% \null
+% \newpage
+
+% table of contents (page 3)
+\onecolumn
+\tableofcontents
+
+%blank page (page 4) (comment in when desired)
+% \afterpage{\blankpage}
+
+% two-column content starts here
+\twocolumn
+
+% page count starts here and page numbering is enabled
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+\section{Introduction}
+\input{docs/1introduction}
+
+\section{Method}
+\input{docs/2method}
+
+%\section{Method}
+%\input{docs/3method}
+
+\section{Results}
+\input{docs/3results}
+
+\section{Discussion}
+\input{docs/4discussion}
+
+\section{Conclusion}
+\input{docs/5conclusion}
+
+\clearpage
+
+\onecolumn
+\printbibliography[heading=bibnumbered, title=References]
+\clearpage
+
+\appendix
+\section{Comparison of our Methods to Autograd}
+\input{docs/autograd_comparison}
+\clearpage
+
+% COMMENT IN ADDITIONAL APPENDICES WHEN NECESSARY
+% \section{\textcolor{red}{Appendix title TBA here}}
+% \input{appendix}
+% \clearpage
+
+% \section{\textcolor{red}{Appendix title TBA here}}
+% \input{appendix}
+% \clearpage
+
+% \section{\textcolor{red}{Appendix title TBA here}}
+% \input{appendix}
+% \clearpage
+
+\end{document}
