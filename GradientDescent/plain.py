@@ -12,7 +12,7 @@ class Plain(GD):
             lr: float = 0.01,
             momentum: Optional[float] = 0.0,
             tuner: Optional[str] = None,
-            max_iter: int = 50,
+            max_iter: int = 1000,
             save_info_per_iter: bool = False,
         ) -> None:
         super().__init__(lr, momentum, tuner)

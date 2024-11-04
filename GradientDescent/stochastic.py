@@ -14,8 +14,8 @@ class Stochastic(GD):
             momentum: Optional[float] = 0.0,
             tuner: Optional[str] = None,
             M: int = 5, 
-            n_epochs: int = 50, 
-            decay_iter: int = 500,
+            n_epochs: int = 10,
+            decay_iter: int = 5,
             save_info_per_iter: bool = False,
         ) -> None:
         super().__init__(lr, momentum, tuner)
@@ -30,14 +30,15 @@ class Stochastic(GD):
         if not (lr_schedule in ["fixed", "linear"]):
             raise ValueError
 
-    def learning_schedule(self, minibatch, epoch) -> float:
+    def learning_schedule(self, epoch) -> float:
         if self.lr_schedule == "fixed":
             return self.lr0
         elif self.lr_schedule == "linear":
-            kappa = epoch / self.decay_iter
-            return (1 - kappa) * self.lr0 + kappa * self.lr0 * 0.01
-        # elif self.lr_schedule == "minibatch":
-        #     return self.t/(t+self.lr0)
+            if epoch < self.decay_iter:
+                kappa = epoch / self.decay_iter
+                return (1 - kappa) * self.lr0 + kappa * self.lr0 * 0.01
+            else:
+                return self.lr0 * 0.01
 
     def gradient_descent(self, input, params, target):
         if self.tuner is not None:
@@ -56,7 +57,7 @@ class Stochastic(GD):
             for i in m_range:
                 xi = input[i:i+self.M]
                 yi = target[i:i+self.M]
-                self.lr = self.learning_schedule(epoch*m + i, epoch)
+                self.lr = self.learning_schedule(epoch)
                 gradient = self.gradient(xi, params, yi)
                 params = self.step(gradient, params, epoch)
 

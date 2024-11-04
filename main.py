@@ -106,15 +106,15 @@ def pytorch():
 
 
 def main():
-    data_set = "iris" # "cancer", "iris" or "heart"
+    data_set = "cancer" # "cancer", "iris" or "heart"
     if data_set == "cancer":
         network_input_size = 30
         # layer_output_sizes = [8, 50, 50, 1] # [8, 10, 6, 1]
         n_layers = 3
         layer_output_sizes = [15] * (n_layers-1) + [1]
         # activation_funcs = [sigmoid, sigmoid, sigmoid, sigmoid]
-        activation_funcs = [sigmoid] * n_layers
-        activation_ders = [sigmoid_der] * n_layers
+        activation_funcs = [ReLU] * (n_layers - 1) + [sigmoid]
+        activation_ders = [ReLU_der] * (n_layers - 1) + [sigmoid_der]
         # activation_ders = [grad(act) for act in activation_funcs]
         # activation_ders = [sigmoid_der] * n_layers
         cost_func = utils.cross_entropy
@@ -150,7 +150,7 @@ def main():
         optimizer,
         seed=18,
     )
-    inputs, targets = utils.get_iris_data()
+    inputs, targets = utils.get_cancer_data()
 
     # new_targets = np.empty((len(targets), 2))
     # for i, target in enumerate(targets):

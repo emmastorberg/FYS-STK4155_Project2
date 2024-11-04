@@ -33,12 +33,12 @@ def mse_func_of_epochs(epochs: np.ndarray,
                            filename: str | None = None) -> None:
     
     if sgd:
-        labels = ["Stochastic Gradient Descent",
-                  "Stochastic Gradient Descent with Momentum", 
+        labels = ["SGD",
+                  "SGD with Momentum", 
                   rf"MSE of OLS Using Stochastic Gradient Descent with $\eta_0 = {fixed_lr}$"]
     else:
-        labels = ["Plain Gradient Descent", 
-                 "Plain Gradient with Momentum", 
+        labels = ["PGD", 
+                 "PGD with Momentum", 
                  rf"MSE of OLS Using Plain Gradient Descent with $\eta = {fixed_lr}$"]
     
     plt.plot(epochs, mse, label=labels[0])
