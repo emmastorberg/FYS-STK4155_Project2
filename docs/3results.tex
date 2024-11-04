@@ -121,29 +121,23 @@ The neural network described \textcolor{blue}{above} was able to predict with an
 As we can see, it seems that the best method overall for this task is \textcolor{red}{(method)} with parameters \textcolor{red}{(parameters)}. 
 
 \subsection{Classification with Neural Network}
-Moving on to the classification task, we once again faced the issue of an extreme number of possibilities to test in order to construct the best-performing network. We limited our scope to only \textcolor{red}{(method)} with parameters \textcolor{red}{(parameters)}. Our search for the optimal set of hyperparameters for the task was in part systematic, and in part educated guesswork and trial and error.
+Moving on to the classification task, we once again faced the issue of an extreme number of possibilities to test in order to construct the best-performing network. We limited our scope to only \textcolor{red}{(method)} with parameters \textcolor{red}{(parameters)}.
 
+\subsubsection{First Attempt with Our Own Implementation}
 Similar to the procedure in the creation of a network for numerical prediction, to make the optimal network for binary classification, we first employed a grid search of a fixed number of nodes per layer, and thereafter we altered the activation function on the hidden layers to see what gave the best results. In this process, we uncovered an error in the implementation. It looked as though the network predicted the average of the target vector, which gave an accuracy approximately equal to the frequency of target value 1 since we are working with binary classification. 
 
-The source of the error, as well as its solution, remains elusive. We studied the implementation and behavior of our network extensively. Unit testing passes for all of our methods, and as we recall, we saw reasonable results from a theoretical standpoint in the numerical prediction task.  
+The source of the error, as well as its solution, remains elusive. We studied the implementation and behavior of our network extensively. Unit testing also passes for all of our methods\footnote{See our GitHub: \url{https://github.com/emmastorberg/FYS-STK4155_Project2}}.  
 
-We initially scaled our data with \texttt{StandardScaler}, which we thought might be the issue, but changing the scaling to \texttt{MinMaxScaler} (also from Scikit-Learn \cite{sklearnScaling}) offered only an incremental change (from an accuracy of approximately 0.62 to 0.63). All gradient descent methods had also passed rigorous unit testing, in addition to the neural network yielding reasonable results from a theoretical standpoint in the numerical prediction task. 
+We initially scaled our data with \texttt{StandardScaler}, which we thought might be the issue, but changing the scaling to \texttt{MinMaxScaler} (also from Scikit-Learn \cite{sklearnScaling}) offered only an incremental change (from an accuracy of approximately 0.62 to 0.63). All gradient descent methods had also passed rigorous unit testing, and we also knew from the experiments in the previous section on the numerical prediction task that our neural network code was capable of producing reasonable results from a theoretical standpoint. 
 
-We continued by testing our network with different datasets, including the iris dataset \cite{irisdataset}, which is a common and beginner-friendly dataset used for testing classification networks. Our implementation performs well on this dataset when scaled with \texttt{StandardScaler}, though not with \texttt{MinMaxScaler}. This showed that it was able to do classification tasks well, so we hoped the implementation was not the problem, but rather that the choice of parameters happen to have led us to a local minimum, which is why the accuracy stopped improving at an early iteration. However, an identical instantiation with PyTorch, an optimized tensor library for deep learning \cite{pytorch}, creates a network that is able to classify the data points without issue, so the instantiation is most likely not the case.
+We tested our network on different datasets, including the iris dataset \cite{irisdataset}, which is a common and beginner-friendly dataset used for testing classification networks. Our implementation performs well on this dataset when scaled with \texttt{StandardScaler}, though not with \texttt{MinMaxScaler}. This showed that it was able to do some classification tasks, so we hoped the implementation was not the problem, but rather that the choice of parameters happened to lead us to a local minimum, which is why the accuracy stopped improving at an early iteration. However, an identical instantiation with PyTorch, an optimized tensor library for deep learning \cite{pytorch}, creates a network that is able to classify the data points without issue, so the instantiation and choice of parameters is most likely not the problem.
 
-These confusing findings left us with a choice to make about the direction of this project. 
+These confusing findings left us with an unclear path towards analyzing our code implementation on breast cancer data, as was the goal of this project. We found that through trial and error, we could achieve accuracy as high as \textcolor{red}{(accuracy)} \%. However, seeing as this is a multiclass rather than binary classification problem, continuing to work with this network and dataset will leave us unable to compare our results to a logistic regression, nor will we be exploring the application of machine learning methods in the medical field, as was our initial motivation.
 
-First, we will explore the limits of our implementation and see how it fares in classifying iris data. 
+Therefore we ultimately made the decision to continue working with the breast cancer data using PyTorch to explore the optimal instantiation of a network for such a dataset. The resulting neural network will also be compared to a logistic regression. 
 
-Through trial and error, we could achieve accuracy as high as \textcolor{red}{(accuracy)} \%. However, seeing as this is a multiclass rather than binary classification problem, continuing with this network and this dataset will leave us unable to compare our results to a logistic regression, nor will we be exploring the application of machine learning methods in the medical field, as was our initial motivation.
-
-Ultimately, we decided to continue working with the breast cancer data using PyTorch to explore the optimal instantiation of a network for such a dataset. The resulting neural network will also be compared to a logistic regression. 
-
-
-
-
-
-The first systematic test was a grid search, where we fixed the number of nodes in each layer. Throughout this task, we always used sigmoid as the activation function. A grid search table showing the best combination of number of layers and nodes per layer (with sigmoid activating all layers) is shown in figure \ref{fig:gridsearch_layers_nodes}. 
+\subsubsection{Continued Exploration with PyTorch}
+Our search for the optimal set of hyperparameters for the task was in part systematic, and in part educated guesswork and trial and error. The first systematic test was a grid search, where we fixed the number of nodes in each layer. Throughout this task, we always used sigmoid as the activation function. A grid search table showing the best combination of number of layers and nodes per layer (with sigmoid activating all layers) is shown in figure \ref{fig:gridsearch_layers_nodes}. 
 
 % our final activation function, and kept the activation functions of the hidden layers the same. Of our four options, having \textcolor{red}{(activation function)} activate all hidden layers resulted in highest accuracy overall. 
 
@@ -210,10 +204,10 @@ Through less organized trial and error testing, we began with the optimal networ
 %\textcolor{purple}{Figure: Accuracy for [SGD (with and without momentum), Adagrad (with and without momentum), RMSprop and Adam] (on the legend) as a function of epochs, with a fixed learning rate}
 %We expect them to converge, some faster than others. With momentum should converge faster.
 
-The network as described \textcolor{blue}{above} has \textcolor{red}{(accuracy)}\% accuracy in its predictions overall. However, we must also consider what type of inaccuracy is most prevalent before determining this as the best network for the task. False positive and negative rate can be seen in the confusion matrix in figure \ref{fig:confusionmatrix}.
+The network as described \textcolor{blue}{above} has \textcolor{red}{(accuracy)}\% accuracy in its predictions overall. However, we must also consider what type of inaccuracy is most prevalent before determining this is the best network for the task. False positive and negative rate can be seen in the confusion matrix in figure \ref{fig:confusionmatrix}.
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{figures/placeholders/confusionmatrix.png}
+    \includegraphics[width=\linewidth]{figures/plots/confusionmatrix.png}
     \caption{\textcolor{purple}{Confusion matrix for the neural net (on the cancer dataset, counting the number of TP, TN, FN and FP)}}
     \label{fig:confusionmatrix}
 \end{figure}
@@ -222,7 +216,6 @@ The network as described \textcolor{blue}{above} has \textcolor{red}{(accuracy)}
 \textcolor{red}{(Comment on FP and FN rate. If FP are higher than FN, our job is done and the results are good. If not, I (EMMA) think we need another plot showing tweaks we have made to prioritize having less FN. Check the text and code that I have commented out right below this.)}
 
 % INCLUDE THIS PARAGRAPH IF ANOTHER PLOT IS NECESSARY; OTHERWISE, MOVE TO DISCUSSION.
-%Our goal is to minimize both false positives and false negatives. A false positive means unnecessary distress for the patient and their family, and wasted hospital resources on additional tests. A false negative, however, could be fatal if cancer goes untreated. Therefore, if the confusion matrix shows a high false negative rate, our loss function should be modified to penalize false negatives more heavily.
 
 % We tuned our model again to lower FN rate. The new confusion matrix can be shown in figure \ref{fig:confusionmatrix2}.
 % \begin{figure}
