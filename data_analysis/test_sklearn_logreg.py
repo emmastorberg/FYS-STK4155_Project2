@@ -10,6 +10,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
 import tqdm
 import git
+import sys
+
 
 
 import utils
@@ -45,13 +47,23 @@ def run_logistic_regression():
             ])
 
     pipe.fit(X_train, y_train)
+    
+    cf = confusion_matrix(y_test, pipe.predict(X_test))
+    group_labels = ['True Neg', 'False Pos','False Neg','True Pos']
 
-    cf = confusion_matrix(y_test, pipe.predict(X_test)).ravel()
+    group_counts = ['{0:0.0f}'.format(value) for value in cf.flatten()]
+    group_percentages = ["{0:.2%}".format(value) for value in cf.flatten()/np.sum(cf)]
+    labels = [f"{v1}\n{v2}" for v1, v2 in zip(group_labels,group_percentages)]
+    labels = np.array(labels).reshape(2,2)
+    sns.heatmap(cf, annot=labels, fmt="")
+    plt.title("Confusion matrix for breast cancer model using sklearn")
+    plt.show()
+
     scores = utils.get_scores(X_test, y_test, pipe)
     feature_importance = (np.exp(pipe["clf"].coef_[0]))
 
     eval_df = pd.DataFrame(
-             cf,
+             cf.ravel(),
              index = ['tn', 'fp', 'fn', 'tp'],
              columns=["Confusion matrix logreg on cancer data"]
         )
