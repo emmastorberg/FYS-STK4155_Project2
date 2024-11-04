@@ -1,33 +1,27 @@
-\textcolor{blue}{In general, did the results we saw align with the theory? Give a suggestion as to why/why not.}
+In general, our results aligned quite well with the theory, with a few hiccups in the classification part. In the first part of the project, we found that inclusion of a momentum term did lead to faster conversion, though it was difficult to see significant differences in smoothness. As expected, stochastic gradient descent was a much quicker method than plain, which makes sense. Our gradient descent methods were also less accurate than using the analytical solutions. This is a finding that is consistent with the theory, as they are numerical approximations of the gradient. 
 
-In general, our results aligned quite with the theory, with a few hiccups in the classification part. In the first part of the project, the found that inclusion of 
+We also saw that dedicated linear regression methods worked better to predict values generated from a second-degree polynomial dataset than a neural network. This makes sense: Neural networks are universal approximators, and can be utilized for a range of tasks, but with some inaccuracy compared to methods capable of given exact solutions (such as OLS does in this case). The neural networks also required far more tuning, which was a time-consuming process which was almost circumvented entirely with use of linear regression methods (especially OLS).
 
-First, we saw that our gradient descent methods were less accurate than using the analytical solutions. This makes sense, as they are numerical approximations. 
+As for the classification task, this is where we ran into strange issues. Our network worked for multiclass classification with the iris dataset, but struggled to predict cancer data at all, even with parameters that the analogous PyTorch methods performed well with. This suggests an error in our implementation that became very difficult to rectify in the more complex neural network code. Though we suspect this is the result of a minor error, we also believe it represents a drawback with use of neural networks on a large scale: When they produce strange results, it can be hard to decipher what is going wrong. 
 
-We also saw that dedicated linear regression methods worked better to predict values generated from a second-degree polynomial dataset than a neural network. This makes sense: Neural networks are universal approximators, and can be utilized for a range of tasks, but with some inaccuracy compared to methods capable of given exact solutions (such as OLS does in this case). 
+The problems in our code made us resort to PyTorch to complete our analysis and exploration of neural networks, in pursuit of a suitable model for the breast cancer data set. As we saw in figure \ref{fig:confusionmatrix}, the model did not produce significantly more false negatives than false positives, which we view as a success in this case. Indeed, our goal is to minimize both types of errors; a false positive means unnecessary distress for the patient and their family, and wasted hospital resources on additional tests. A false negative, however, could be fatal if cancer goes untreated. Therefore, if the confusion matrix shows a high false negative rate, our loss function should be modified to penalize false negatives more heavily. Fortunately, this was not necessary for us, but we would like to highlight it as one of our main considerations in this project. 
 
-\textcolor{blue}{What were the choices of hyperparameters, and what was the effect of choosing those specific ones?}
+Furthermore, when predicting breast cancer, we often want practitioners to use the model as decision support, not as the single source of truth. This is less straightforward with our neural network compared to for instance the logistic regression model we created, where we examined feature importance. Although prediction and understanding are related, accurate predictions can still come from flawed models, making it difficult for practitioners to interact with the model. These are considerations that must be taken before deploying neural networks in real-life contexts. 
 
-In the numerical prediction task, ...
 
-\textcolor{blue}{Are neural networks worth all the tuning they require?}
+% \subsection{Limitation of methods}
+% Neural networks requires vast computational resources compared to regression methods. Wee see that the runtime increases significantly for our neural net compared to our logistic regression. \\
 
-Our goal is to minimize both false positives and false negatives. A false positive means unnecessary distress for the patient and their family, and wasted hospital resources on additional tests. A false negative, however, could be fatal if cancer goes untreated. Therefore, if the confusion matrix shows a high false negative rate, our loss function should be modified to penalize false negatives more heavily
+% -  Our neural nets require tuning. \\
 
-\subsection{Limitation of methods}
-Neural networks requires vast computational resources compared to regression methods. Wee see that the runtime increases significantly for our neural net compared to our logistic regression. \\
+% For linear data, like in the linear regression example
+% %\ref{sec:linear code}
+% a linear regression model is a better choice. 
+% \\
+% \subsection{What we found}
 
--  Our neural nets require tuning. \\
+% \textcolor{purple}{We found that creating a neural network from scratch can lead to numerical instability. }
 
-For linear data, like in the linear regression example
-%\ref{sec:linear code}
-a linear regression model is a better choice. 
-\\
-When predicting breast cancer, we often want practitioners to use the model as decision support, not as the single source of truth. This is less straightforward with our neural network compared to the logistic regression model from scikit-learn \textcolor{red} cite, where we examined feature importance. Although prediction and understanding are related, accurate predictions can still come from flawed models, making it difficult for practitioners to interact with the model.
-\subsection{What we found}
+% \textcolor{purple}{Using neural network on simple tasks that can be solved by regression methods is not worth the trouble of tuning.}
 
-\textcolor{purple}{We found that creating a neural network from scratch can lead to numerical instability. }
-
-\textcolor{purple}{Using neural network on simple tasks that can be solved by regression methods is not worth the trouble of tuning.}
-
-\textcolor{purple}{For future work, we will work on numerical stability. }
+% \textcolor{purple}{For future work, we will work on numerical stability. }
