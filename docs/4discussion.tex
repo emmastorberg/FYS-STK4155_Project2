@@ -1,8 +1,16 @@
 \textcolor{blue}{In general, did the results we saw align with the theory? Give a suggestion as to why/why not.}
 
+In general, our results aligned quite with the theory, with a few hiccups in the classification part. In the first part of the project, 
+
+First, we saw that our gradient descent methods were less accurate than using the analytical solutions. This makes sense, as they are numerical approximations. 
+
+We also saw that dedicated linear regression methods worked better to predict values generated from a second-degree polynomial dataset than a neural network. This makes sense: Neural networks are universal approximators, and can be utilized for a range of tasks, but with some inaccuracy compared to methods capable of given exact solutions (such as OLS does in this case). 
+
 \textcolor{blue}{What were the choices of hyperparameters, and what was the effect of choosing those specific ones?}
 
-In the numerical prediction task, we 
+In the numerical prediction task, ...
+
+\textcolor{blue}{Are neural networks worth all the tuning they require?}
 
 \subsection{Limitation of methods}
 Neural networks requires vast computational resources compared to regression methods. Wee see that the runtime increases significantly for our neural net compared to our logistic regression. \\
@@ -15,3 +23,9 @@ a linear regression model is a better choice.
 \\
 When predicting breast cancer, we often want practitioners to use the model as decision support, not as the single source of truth. This is less straightforward with our neural network compared to the logistic regression model from scikit-learn \textcolor{red} cite, where we examined feature importance. Although prediction and understanding are related, accurate predictions can still come from flawed models, making it difficult for practitioners to interact with the model.
 \subsection{What we found}
+
+\textcolor{purple}{We found that creating a neural network from scratch can lead to numerical instability. }
+
+\textcolor{purple}{Using neural network on simple tasks that can be solved by regression methods is not worth the trouble of tuning.}
+
+\textcolor{purple}{For future work, we will work on numerical stability. }
