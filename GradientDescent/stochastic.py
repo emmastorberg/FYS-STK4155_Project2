@@ -15,7 +15,6 @@ class Stochastic(GD):
             tuner: Optional[str] = None,
             M: int = 5, 
             n_epochs: int = 50, 
-            t: int = 50,
             decay_iter: int = 500,
         ) -> None:
         super().__init__(lr, momentum, tuner)
@@ -25,10 +24,9 @@ class Stochastic(GD):
         self.lr0 = lr
         self.M = M
         self.n_epochs = n_epochs
-        self.t = t
         self.decay_iter = decay_iter
 
-        if not (lr_schedule in ["fixed", "linear", "minibatch"]):
+        if not (lr_schedule in ["fixed", "linear"]):
             raise ValueError
 
     def learning_schedule(self, minibatch, epoch) -> float:

@@ -31,8 +31,11 @@ class NeuralNetwork:
 
         i_size = network_input_size
         for layer_output_size in layer_output_sizes:
-            W = np.random.randn(layer_output_size, i_size).T * 0.1
-            b = np.ones(layer_output_size) * 0.1
+            std = np.sqrt(2 / (layer_output_size + i_size))
+            W = np.random.normal(scale=std, size=(i_size, layer_output_size))
+            # W = np.random.randn(layer_output_size, i_size).T * 0.1
+            b = np.zeros(layer_output_size)
+            # b = np.ones(layer_output_size) * 0.1
             layers.append((W, b))
 
             i_size = layer_output_size
@@ -56,7 +59,6 @@ class NeuralNetwork:
             z = a @ W + b
             a = activation_func(z)
             zs.append(z)
-
         return layer_inputs, zs, a
     
     def backpropagation(self, input, target):
@@ -74,7 +76,7 @@ class NeuralNetwork:
                 dC_da = dC_dz @ W.T
             dC_dz = activation_der(z, dC_da)
             dC_dW = layer_input.T @ dC_dz
-            dC_db = np.mean(dC_dz, axis=0) * len(layer_input) # deriv wrt b is 1
+            dC_db = np.sum(dC_dz, axis=0) * len(layer_input)
 
             layer_grads[i] = (dC_dW, dC_db)
 

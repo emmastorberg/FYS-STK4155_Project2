@@ -1,6 +1,4 @@
-import itertools
-
-import pytest # type: ignore
+import pytest
 import autograd.numpy as np
 from autograd import grad, jacobian
 from sklearn.metrics import log_loss

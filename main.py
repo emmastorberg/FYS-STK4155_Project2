@@ -3,8 +3,11 @@ import matplotlib.pyplot as plt
 from autograd import grad
 from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.metrics import accuracy_score, log_loss
+import torch
+import torch.nn as nn
+import torch.optim as optim
 
 from GradientDescent import Plain, Stochastic
 from neural_network import NeuralNetwork
@@ -12,9 +15,6 @@ from logistic_regression import LogisticRegression
 import utils
 from utils import sigmoid, sigmoid_der, mse, mse_der, softmax, softmax_der, ReLU, ReLU_der
 
-import torch
-import torch.nn as nn
-import torch.optim as optim
 
 def pytorch():
     # Load breast cancer dataset
@@ -106,15 +106,35 @@ def pytorch():
 
 
 def main():
+    data_set = "cancer" # "cancer", "iris" or "heart"
+    if data_set == "cancer":
+        network_input_size = 30
+        # layer_output_sizes = [8, 50, 50, 1] # [8, 10, 6, 1]
+        n_layers = 3
+        layer_output_sizes = [15] * (n_layers-1) + [1]
+        # activation_funcs = [sigmoid, sigmoid, sigmoid, sigmoid]
+        activation_funcs = [sigmoid] * n_layers
+        activation_ders = [sigmoid_der] * n_layers
+        # activation_ders = [grad(act) for act in activation_funcs]
+        # activation_ders = [sigmoid_der] * n_layers
+        cost_func = utils.cross_entropy
+        cost_der = utils.cross_entropy_der
+        #cost_der = grad(cost_func, 0)
 
-    network_input_size = 30 
-    layer_output_sizes = [20, 1]
-    activation_funcs = [ReLU, sigmoid, sigmoid, sigmoid]
-    activation_ders = [ReLU_der, sigmoid_der, sigmoid_der, sigmoid_der]
-    cost_func = utils.binary_cross_entropy
-    cost_der = grad(utils.binary_cross_entropy, 0)
-    # optimizer = Stochastic(lr=0.1, M=5, n_epochs=1000, lr_schedule="linear", tuner="adam")
-    optimizer = Plain(lr=0.1, max_iter=10000)
+    elif data_set == "iris":
+        pass
+
+    elif data_set == "heart":
+        network_input_size = 8
+        n_layers = 3
+        layer_output_sizes = [25] * (n_layers-1) + [2]
+        activation_funcs = [sigmoid] * n_layers
+        activation_ders = [sigmoid_der] * n_layers
+        cost_func = utils.binary_cross_entropy
+        cost_der = grad(cost_func, 0)
+
+    # optimizer = Stochastic(lr=0.001, M=10, n_epochs=1000, lr_schedule="linear", tuner="adam")
+    optimizer = Plain(lr=0.01, max_iter=10000)
     nn = NeuralNetwork(
         network_input_size,
         layer_output_sizes,
@@ -127,9 +147,17 @@ def main():
     )
     inputs, targets = utils.get_cancer_data()
 
+    # new_targets = np.empty((len(targets), 2))
+    # for i, target in enumerate(targets):
+    #     if target == 1:
+    #         new_targets[i, :] = [1, 0]
+    #     else:
+    #         new_targets[i, :] = [0, 1]
+    
+    # targets = new_targets
     x_train, x_test, y_train, y_test = train_test_split(inputs, targets)
     
-    scaler = StandardScaler()
+    scaler = MinMaxScaler()
     x_train = scaler.fit_transform(x_train)
     x_test = scaler.transform(x_test)
 
