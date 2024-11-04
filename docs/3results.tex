@@ -5,7 +5,7 @@ project is to predict breast cancer data accurately, we systematically tested al
 We began with the most simple method, plain gradient descent, which we used with a constant learning rate. We tested the values $\eta \in \{ 0.1, 0.01, 0.001, 0.0001\}$ to find the best possible value to fixate for our experiments\footnote{The plots showing our testing can be found on GitHub in the directory \texttt{figures/all\_plots}.}, and based on this test, we saw that we had the best results when $\eta = 0.1$. With this as our learning rate, we studied convergence speed towards the minimum when using plain gradient descent and plain gradient descent with momentum. The plot showing this (as well as a comparison to the analytical solution) can be seen in figure \ref{fig:plainVSanalytical}, up to 10 epochs \cite{mediumEpochNumber}\cite{epochsBreastCancerArticle}.
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{figures/all_plots/plain_mse_per_iter_eta_1e-1.png}
+    \includegraphics[width=\linewidth]{figures/all_plots/plain_mse_pr_iter_eta_1e-1.png}
     \caption{Plain gradient descent (PGD) with and without momentum compared to the analytical solution, with a constant learning rate of $\eta = 0.1$ and a momentum parameter $\gamma = 0.5$.}
     \label{fig:plainVSanalytical}
 \end{figure}
@@ -17,7 +17,7 @@ Next, we looked at our stochastic methods, with and without momentum. In this ca
 where we found the value $\eta_0 = 0.1$ after a few tests, as well as consulting the literature. We also kept the mini-batch size fixed at 4, which we found produced decent values in this case. The comparison of the MSE with and without momentum as a function of epochs is displayed in figure \ref{fig:sgdVSanalytical}. 
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{figures/all_plot/sgd_mse_pr_epoch_eta_1e-1.png}
+    \includegraphics[width=\linewidth]{figures/all_plots/sgd_mse_pr_epoch_eta_1e-1.png}
     \caption{Stochastic gradient descent (SGD) with and without momentum compared to the analytical solution, with a constant learning rate of $\eta_0 = 0.1$ and a momentum parameter $\gamma = 0.5$. The size of the mini-batches is also fixed at 4.}
     \label{fig:sgdVSanalytical}
 \end{figure}
@@ -39,7 +39,7 @@ Next, we looked at the methods with adaptive learning rates. All methods were in
     \label{fig:MSEGD}
 \end{figure}
 
-As part of our testing process, we compared the performance of our gradients to that of the automatic differentiation library Autograd \cite{autograd}. Since our tests pass\footnote{Tests can be found on our GitHub: \url{https://github.com/emmastorberg/FYS-STK4155_Project2/blob/main/tests.py}}, we expected our implementations to give quite similar results as these pre-existing methods, which they did\footnote{Plot showing our methods compared to Autograd can be found in appendix \textcolor{red}{(LETTER)}.}. 
+As part of our testing process, we compared the performance of our gradients to that of the automatic differentiation library Autograd \cite{autograd}. Since our tests pass\footnote{Tests can be found on our GitHub: \url{https://github.com/emmastorberg/FYS-STK4155_Project2/blob/main/tests.py}}, we expected our implementations to give quite similar results as these pre-existing methods, which they did. 
 
 Up to this point, we have only looked at OLS. When we use ridge regression instead, there is the additional hyperparameter $\lambda$ to consider. We performed a grid search to determine what combination of $\lambda$ and gradient descent method to choose, and tested $\lambda \in \text{\textcolor{red}{(value)}}$ against each of the seven methods we tested for OLS in figures \ref{fig:learningratesGD} and \ref{fig:MSEGD}. The grid search table can be seen in figure \ref{fig:gridsearch_ridge}, where we can visually determine the best method as \textcolor{red}{(add method here)}, with $\lambda = \text{\textcolor{red}{(value)}}$. \textcolor{red}{An additional table showing the results of a grid search for finding the best $R^2$ score can be found in appendix (LETTER). (Remove if we don't do this.)} 
 \begin{figure}
@@ -109,13 +109,20 @@ With slight variations to the hidden layers, the number of nodes in them and wha
   \label{tab:numericalprediction}
 \end{table}
 
-The neural network described \textcolor{blue}{above} was able to predict with an accuracy of \textcolor{red}{(value)}\%. The MSE of our best-performing neural network, OLS and ridge regression compared to a neural network created with Scikit-Learn can be seen in figure \ref{fig:numericalprediction}; a similar comparison of $R^2$ score can be found in figure \ref{fig:numericalpredictionR2} in appendix \textcolor{red}{(LETTER)}.
+The neural network described \textcolor{blue}{above} was able to predict with an accuracy of \textcolor{red}{(value)}\%. The MSE of our best-performing neural network, OLS and ridge regression compared to a neural network created with Scikit-Learn can be seen in figure \ref{fig:numericalprediction}; a similar comparison of $R^2$ score can be found in figure \ref{fig:numericalpredictionR2} in appendix \textcolor{red}{(LETTER)}. We also show the predictions made by each method in figure \ref{fig:predictioncomparison}.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{figures/placeholders/numericalprediction.png}
     \caption{\textcolor{purple}{MSE as a function of epochs for OLS, Ridge and neural network (optimal version of all three methods). We also need a sklearn comparison here.}}
     \label{fig:numericalprediction}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/placeholders/predictioncomparison.png}
+    \caption{Comparison of predictions with optimal versions of all methods shown.}
+    \label{fig:predictioncomparison}
 \end{figure}
 
 As we can see, it seems that the best method overall for this task is \textcolor{red}{(method)} with parameters \textcolor{red}{(parameters)}. 
@@ -212,9 +219,6 @@ The network as described \textcolor{blue}{above} has \textcolor{red}{(accuracy)}
     \label{fig:confusionmatrix}
 \end{figure}
 
-
-\textcolor{red}{(Comment on FP and FN rate. If FP are higher than FN, our job is done and the results are good. If not, I (EMMA) think we need another plot showing tweaks we have made to prioritize having less FN. Check the text and code that I have commented out right below this.)}
-
 % INCLUDE THIS PARAGRAPH IF ANOTHER PLOT IS NECESSARY; OTHERWISE, MOVE TO DISCUSSION.
 
 % We tuned our model again to lower FN rate. The new confusion matrix can be shown in figure \ref{fig:confusionmatrix2}.
@@ -229,7 +233,7 @@ The network as described \textcolor{blue}{above} has \textcolor{red}{(accuracy)}
 As discussed, an alternative to a neural network requiring far less tuning is logistic regression. This corresponds to a network with no hidden layers, activated by the sigmoid function. The resulting confusion matrix is shown in figure \ref{fig:logreg}. 
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{figures/plots/logreg.png}
+    \includegraphics[width=\linewidth]{figures/plots/logreg.png}
     \caption{\textcolor{purple}{Confusion matrix from logistic regression}}
     \label{fig:logreg}
 \end{figure}
