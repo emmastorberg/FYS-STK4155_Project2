@@ -1,7 +1,8 @@
 import autograd.numpy as np # type: ignore
-from autograd import jacobian
+from autograd import jacobian, grad
 from sklearn.datasets import load_iris, load_breast_cancer
 from sklearn.metrics import accuracy_score
+import pandas as pd
 
 
 def Franke_function(x: np.ndarray, y: np.ndarray, noise: bool = True) -> np.ndarray:
@@ -70,7 +71,10 @@ def no_activation_der(z):
 def ReLU(z):
     return np.where(z > 0, z, 0)
 
-def ReLU_der(z):
+def ReLU_der(z, dC_da):
+    return dC_da * np.where(z > 0, 1, 0)
+
+def ReLU_jacobi(z):
     der = np.where(z > 0, 1, 0)
     return np.stack([np.diag(row) for row in der])
 
@@ -78,39 +82,61 @@ def leaky_ReLU(z):
     alpha = 0.01
     return np.where(z > 0, z, 0) + np.where(z < 0, alpha * z, 0)
 
-def leaky_ReLU_der(z):
+def leaky_ReLU_der(z, dC_da):
+    alpha = 0.1
+    der = np.where(z > 0, 1, 0) + np.where(z < 0, alpha, 0)
+    return dC_da * der
+
+def leaky_ReLU_jacobi(z):
     alpha = 0.01
     der = np.where(z > 0, 1, 0) + np.where(z < 0, alpha, 0)
     return np.stack([np.diag(row) for row in der])
 
-def sigmoid(z):
     # if np.any(np.isinf((1 + np.exp(-z)))):
     #     print("hei")
-    neg = np.where(z < 0, np.exp(z) / (1 + np.exp(z)), 0)
-    pos = np.where(z >= 0, 1 / (1 + np.exp(-z)), 0)
-    return pos + neg
+    # eps = 1e-15
+    # z = np.clip(z, eps, 1-eps)
+    # neg = np.where(z < 0, np.exp(z) / (1 + np.exp(z)), 0)
+    # pos = np.where(z >= 0, 1 / (1 + np.exp(-z)), 0)
+    # return neg + pos
 
-def sigmoid_der(z):
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+    # eps = 1e-15
+    # z = np.clip(z, eps, 1-eps)
+    # neg = np.where(z < 0, np.exp(z) / (1 + np.exp(z)), 0)
+    # pos = np.where(z >= 0, 1 / (1 + np.exp(-z)), 0)
+    # return neg + pos
+
+def sigmoid_der(z, dC_da):
     der = sigmoid(z) * (1 - sigmoid(z))
-    return np.stack([np.diag(row) for row in der])
+    return dC_da * der
+
+def sigmoid_jacobi(z):
+    jacobi = jacobian(sigmoid, 0)
+    der = []
+    for row in z:
+        der.append(jacobi(row))
+    der = np.array(der)
+    return der
 
 def softmax(z):
     e_z = np.exp(z - np.max(z, axis=1, keepdims=True))
     return e_z / np.sum(e_z, axis=1, keepdims=True)
 
 def softmax_vec(z):
-    """Compute softmax values for each set of scores in the vector z.
-    Use this function when you use the activation function on one vector at a time"""
     e_z = np.exp(z - np.max(z))
     return e_z / np.sum(e_z)
 
-# def softmax_der(z):
-#     gradient = elementwise_grad(softmax, 0)
-#     return gradient(z)
-
-def softmax_der(z):
+def softmax_jacobi(z):
     s = softmax(z)
     return np.stack([np.diag(row) - np.outer(row, row.T) for row in s])
+
+def softmax_der(z, dC_da):
+    s = softmax(z)
+    jacobi = np.stack([np.diag(row) - np.outer(row, row.T) for row in s])
+    return np.einsum("ij, ijk -> ik", dC_da, jacobi)
+    # return np.stack([np.diag(row) - np.outer(row, row.T) for row in s])
 
 def mse(predict, target):
     n = len(target)
@@ -121,19 +147,26 @@ def mse_der(predict, target):
     return (2/n) * (predict - target)
 
 def cross_entropy(predict, target):
-    eps = 1e-8
-    predict = np.clip(predict, eps, 1 - eps)
+    # eps = 1e-8
+    # predict = np.clip(predict, eps, 1 - eps)
     return np.sum(-target * np.log(predict))
 
 def binary_cross_entropy(predict, target):
+    return -np.mean((target * np.log(predict) + (1 - target) * np.log(1 - predict)))
     # Clip predictions to avoid log(0)
-    eps = 1e-8
-    predict = np.clip(predict, eps, 1 - eps)
-    return np.mean(target * np.log(predict) + (1 - target) * np.log(1 - predict))
+    # eps = 1e-8
+    # predict = np.clip(predict, eps, 1 - eps)
+    # print(np.max(predict), np.min(predict), np.mean(predict))
+    # return -np.mean(target * np.log(predict) + (1 - target) * np.log(1 - predict))
 
 def cross_entropy_der(predict, target):
     # predict = np.clip(predict, 1e-7, 1 - 1e-7)
-    return - target / predict
+    # return - target / predict
+    x = -(target * 1 / predict - (1 - target) * 1/(1 - predict)) / predict.size
+    
+    return np.mean(x, axis=0).reshape(-1, 1)
+    return -(target * 1 / predict - (1 - target) * 1/(1 - predict)) / predict.size
+    
 
 def get_iris_data():
     iris = load_iris()
@@ -150,6 +183,9 @@ def get_cancer_data():
     return inputs, targets
 
 def accuracy(predictions, targets):
+    if predictions.shape[1] == 1:
+        preds = predictions > 0.5
+        return np.mean(preds == targets)
     one_hot_predictions = np.zeros(predictions.shape)
 
     for i, prediction in enumerate(predictions):
@@ -157,6 +193,8 @@ def accuracy(predictions, targets):
     return accuracy_score(one_hot_predictions, targets)
 
 def analytic_grad_OLS(X, beta, y):
+    print(f"X: {X}")
+    print(f"beta: {beta[0]}")
     return [(2.0/len(X)) * X.T @ (X @ beta[0] - y)]
 
 def cost_OLS(X, beta, y):
@@ -177,6 +215,18 @@ class analytic_grad_Ridge:
     
     def __call__(self, X, beta, y):
         beta = beta[0]
-        return [2.0 * X.T @ (X @ beta - y) + self.lmbda * beta[0]]
-    
+        return [2.0 * X.T @ (X @ beta - y) + self.lmbda * beta]
 
+def get_heart_data():
+    data = pd.read_csv("data/heart.csv")
+    data.Sex.replace({"M": 0, "F": 1}, inplace=True)
+    data.ExerciseAngina.replace({"N": 0, "Y": 1}, inplace=True)
+    data.drop(["ChestPainType", "RestingECG", "ST_Slope"], axis=1, inplace=True)
+    a =data.to_numpy()
+    inputs = a[:,:-1]
+    targets = a[:,-1]
+    return inputs, targets
+
+
+if __name__ == "__main__":
+    print(get_heart_data())
