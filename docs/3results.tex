@@ -24,18 +24,18 @@ where we found the value $\eta_0 = 0.1$ after a few tests, as well as consulting
 
 We timed our methods, and as expected, stochastic gradient descent gave us results quicker, with minimal detriment to the MSE. \textcolor{red}{(We should time our results with plain and SGD and mention here that SGD is quicker.)} From this point on, we will therefore continue using stochastic instead of plain gradient descent for computational efficiency.
 
-Next, we looked at the methods with adaptive learning rates. All methods were initialized with the same global learning rate $\eta = 0.1$ to begin with, as this was the best result in both of our previous tests. We wanted to see how the different methods adapted the learning rate over time, and if this behavior was consistent with the theory. The learning rates as a function of epochs can be seen in figure \ref{fig:learningratesGD}, and the development of the MSE over epochs in figure \ref{fig:MSEGD}. We expect smoother graphs with faster convergence in methods with momentum, \textcolor{red}{true/false}.
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\linewidth]{figures/placeholders/learningratesGD.png}
-    \caption{\textcolor{purple}{Plot of 3 subplots showing SGD w and w/o momentum for each of the three methods of adaptable learning rates.  Function of number of epochs. Learning rate on y-axis. See photo on Emma's phone.}}
-    \label{fig:learningratesGD}
-\end{figure}
+Next, we looked at the methods with adaptive learning rates. All methods were initialized with the same global learning rate $\eta = 0.1$ to begin with, as this was the best result in both of our previous tests. We wanted to see how the different methods of adaptive learning rate converged, and if this behavior was consistent with the theory. The development of the MSE over epochs is shown in figure \ref{fig:MSEGD}. We see faster convergence in methods with momentum.
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.5\linewidth]{figures/placeholders/learningratesGD.png}
+%     \caption{\textcolor{purple}{Plot of 3 subplots showing SGD w and w/o momentum for each of the three methods of adaptable learning rates.  Function of number of epochs. Learning rate on y-axis. See photo on Emma's phone.}}
+%     \label{fig:learningratesGD}
+% \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{figures/placeholders/MSEGD.png}
-    \caption{\textcolor{purple}{Plot of 3 subplots showing SGD w and w/o momentum for each of the three methods of adaptable learning rates.  Function of number of epochs. MSE on y-axis.}}
+    \includegraphics[width=\linewidth]{figures/placeholders/MSEGD.png}
+    \caption{MSE as a function of epochs for the different emthods of adaptive learnign rate. For all methods, mini-batch size is fixed at 4, and momentum terms where applicable are scaled by $\gamma = 0.5$. SGD decays linearly, as in the previous figure.}
     \label{fig:MSEGD}
 \end{figure}
 
