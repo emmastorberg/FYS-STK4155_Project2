@@ -121,3 +121,63 @@ def three_stacked_subplots(epochs: np.ndarray,
             plt.savefig("MSEGD.png")
     else:
         plt.show()
+
+def gridsearch(parameter1, parameter2):
+    ...
+
+def mse_linreg_comparison(
+        epochs: np.ndarray, 
+        ols: np.ndarray, 
+        ridge: np.ndarray, 
+        nn: np.ndarray, 
+        sklearn: np.ndarray,
+        save: bool = False):
+    
+    plt.plot(epochs, ols, label = "OLS")
+    plt.plot(epochs, ridge, label = "Ridge Regression")
+    plt.plot(epochs, nn, label = "Neural Network")
+    plt.plot(epochs, sklearn, label = "Scikit-Learn")
+
+    plt.xlabel("Epochs")
+    plt.ylabel("MSE")
+
+    plt.title("Comparison of Optimal Methods for Polynomial Approximation")
+
+    if save:
+        plt.savefig("numericalprediction.png")
+    else:
+        plt.show()
+
+def accuracy_with_different_activationfuncs_in_hidden_layers(
+        epochs: np.ndarray, 
+        sigmoid: np.ndarray, 
+        softmax: np.ndarray, 
+        relu: np.ndarray, 
+        leakyrelu: np.ndarray,
+        save: bool = False,
+        linear: bool = True
+        ) -> None:
+
+    plt.plot(epochs, sigmoid, label = "Sigmoid")
+    plt.plot(epochs, softmax, label = "Softmax")
+    plt.plot(epochs, relu, label = "ReLU")
+    plt.plot(epochs, leakyrelu, label = "Leaky ReLU")
+
+    plt.xlabel("Epochs")
+
+    if linear:
+        plt.ylabel("MSE")
+        plt.title("Different Activations of Hidden Layers in Numerical Prediction Task")
+
+        if save:
+            plt.savefig("activationfunctions_cost_numpred.png")
+        else:
+            plt.show()
+    else:
+        plt.ylabel("Accuracy")
+        plt.title("Different Activations of Hidden Layers in Classification Task")
+        
+        if save:
+            plt.savefig("activationfunctions_cost.png")
+        else:
+            plt.show()
