@@ -71,7 +71,7 @@ Next, we tried varying what activation functions to use on the hidden layers. Th
     \label{fig:activationfunctions_cost_numpred}
 \end{figure}
 
-With slight variations to the hidden layers, the number of nodes in them and what activation functions to use at each stage, we arrived at our best-performing network for this task. The hyperparameters used to create it can be seen in table \ref{tab:numericalprediction}: 
+We attempted some slight variations to the hidden layers, the nodes in them and the activation functions at each stage, without significant improvement, so we stuck to the network we determined previously. Its specifications and hyperparameters can be seen in table \ref{tab:numericalprediction} below: 
 \begin{table}[h!]
   \centering
   \small
@@ -87,7 +87,7 @@ With slight variations to the hidden layers, the number of nodes in them and wha
     \hline
     Mini-batch size & $20$ (test data) \\
     \hline
-    Gradient descent method & Adam \\
+    Optimizer & Adam \\
     \hline
     Initial learning rate & $\eta = 0.1$ \\
     \hline
@@ -99,15 +99,15 @@ With slight variations to the hidden layers, the number of nodes in them and wha
     \hline
     Cost function & MSE \\
     \hline
-    Input layer & 1 node, activation \\
+    Input layer & 1 node, ReLU \\
     \hline
-    Hidden layer 1 & 4 nodes, activation \\
+    Hidden layer 1 & 4 nodes, ReLU \\
     \hline
-    Hidden layer 2 & 4 nodes, activation \\
+    Hidden layer 2 & 4 nodes, ReLU \\
     \hline
-    Hidden layer 3 & 4 nodes, activation \\
+    Hidden layer 3 & 4 nodes, ReLU \\
     \hline
-    Hidden layer 4 & 4 nodes, activation \\
+    Hidden layer 4 & 4 nodes, ReLU \\
     \hline
     Output layer & 1 node, ReLU \\
     \hline
@@ -116,21 +116,20 @@ With slight variations to the hidden layers, the number of nodes in them and wha
   \label{tab:numericalprediction}
 \end{table}
 
-The neural network described \textcolor{blue}{above} was able to predict with an MSE of \textcolor{red}{X} on the testing data. The MSE of our best-performing neural network, OLS and ridge regression compared to stochastic gradient descent using Scikit-Learn can be seen in figure \ref{fig:numericalprediction}. We also show the predictions made by each method in figure \ref{fig:predictioncomparison}.
+The neural network described above was able to predict with an MSE around 0.08 on the testing data, as we see in figure \ref{fig:numericalprediction}. This is overall a decent performance, but we also see that our linear regression methods (as well as ridge regression with Scikit-Learn) perform much better with less tuning required. We also show the predictions made by each method in figure \ref{fig:predictioncomparison}. As we can see, it seems that the best method overall for this task is \textcolor{red}{(method)} with parameters \textcolor{red}{(parameters)}. 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figures/placeholders/numericalprediction.png}
-    \caption{MSE as a function of epochs for OLS, Ridge and neural network (our best version of all three methods using Adam to optimize), also compared to Scikit-Learn ridge regression by SGD with $\eta = 0.1$.}
+    \includegraphics[width=\linewidth]{figures/all_plots/numericalprediction.png}
+    \caption{MSE as a function of epochs (shown from 5 to 10 epochs) for our best versions of OLS, Ridge and neural network, all with the optimizer Adam. They are also compared to Scikit-Learn's ridge regression by SGD with $\eta = 0.1$.}
     \label{fig:numericalprediction}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/placeholders/predictioncomparison.png}
-    \caption{Comparison of predictions with optimal versions of all methods shown.}
+    \caption{Comparison of predictions with optimal versions of all methods shown on scaled input data.}
     \label{fig:predictioncomparison}
 \end{figure}
-As we can see, it seems that the best method overall for this task is \textcolor{red}{(method)} with parameters \textcolor{red}{(parameters)}. 
 
 \subsection{Classification with Neural Network}
 Moving on to the classification task, we once again faced the issue of an extreme number of possibilities to test in order to construct the best-performing network. We limited our scope to only \textcolor{red}{(method)} with parameters \textcolor{red}{(parameters)}.
