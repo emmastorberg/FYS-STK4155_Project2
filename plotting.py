@@ -185,7 +185,7 @@ def accuracy_with_different_activationfuncs_in_hidden_layers(
             plt.show()
 
 def prediction_comparison(
-        input: np.ndarray, 
+        input: np.ndarray,
         target: np.ndarray, 
         ols_pred: np.ndarray, 
         ridge_pred: np.ndarray,
@@ -194,14 +194,15 @@ def prediction_comparison(
         save: bool = False
         ) -> None:
 
-    plt.plot(input, target, label = "Exact Solution")
-    plt.plot(input, ols_pred, label = "OLS")
-    plt.plot(input, ridge_pred, label = "Ridge Regression")
-    plt.plot(input, nn_pred, label = "Neural Network")
-    plt.plot(input, sklearn_pred, label = "Scikit-Learn")
+    plt.scatter(input, ols_pred, label = "OLS", marker="o", s=13)
+    plt.scatter(input, ridge_pred, label = "Ridge Regression", marker="o", s=13)
+    plt.scatter(input, nn_pred, label = "Neural Network", marker="o", s=13)
+    plt.scatter(input, sklearn_pred, label = "Scikit-Learn", marker="o", s=13)
+    plt.scatter(input, target, label = "Exact Solution", marker="o", s=13)
 
     plt.xlabel(r"$x$")
     plt.ylabel(r"$y$")
+    plt.legend()
     plt.title("Polynomial Approximation with Various Methods")
     
     if save:
