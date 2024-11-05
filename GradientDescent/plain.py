@@ -8,6 +8,7 @@ from .gradient_descent import GD
 
 
 class Plain(GD):
+    """Plain Gradient Descent."""
     def __init__(
             self, 
             lr: float = 0.01,
@@ -16,13 +17,33 @@ class Plain(GD):
             max_iter: int = 1000,
             save_info_per_iter: bool = False,
         ) -> None:
+        """Initialize the class.
+
+        Args:
+            lr (float, optional): Learning rate. Defaults to 0.01.
+            momentum (Optional[float], optional): Momentum parameter. Defaults to 0.0.
+            tuner (Optional[str], optional): 
+                Optional adaptive learning rate method. Options are "adam", "adagrad" and "rmsprop". Defaults to None.
+            max_iter (int, optional): Maximum number of iterations before termination. Defaults to 1000.
+            save_info_per_iter (bool, optional): Save the parameters at each iteration. Defaults to False.
+        """
         super().__init__(lr, momentum, tuner)
         self.max_iter = max_iter
         self.save_info_per_iter = save_info_per_iter
 
         self.info = None
 
-    def gradient_descent(self, input, params, target):
+    def gradient_descent(self, input: np.ndarray, params: list[np.ndarray], target: np.ndarray) -> list[np.ndarray]:
+        """Perform the gradient descent.
+
+        Args:
+            input (np.ndarray): Input values.
+            params (list[np.ndarray]): Parameters to be optimized.
+            target (np.ndarray): Target values.
+
+        Returns:
+            list[np.ndarray]: Optimized parameters.
+        """
         if self.tuner is not None:
             self.m = [0.0] * len(params)
             self.s = [0.0] * len(params)

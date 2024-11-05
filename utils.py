@@ -165,7 +165,7 @@ def binary_cross_entropy(predict, target):
     # print(np.max(predict), np.min(predict), np.mean(predict))
     # return -np.mean(target * np.log(predict) + (1 - target) * np.log(1 - predict))
 
-def cross_entropy_der(predict, target):
+def binary_cross_entropy_der(predict, target):
     # predict = np.clip(predict, 1e-7, 1 - 1e-7)
     # return - target / predict
     x = -(target * 1 / predict - (1 - target) * 1/(1 - predict)) / predict.size
