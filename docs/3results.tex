@@ -2,7 +2,7 @@ This section documents the results of various experiments we did. Since the fina
 project is to predict breast cancer data accurately, we systematically tested all necessary components to perform this task, such that we ensure correctness (and reproducibility) of our final results. All plots show the performance of the model on testing data only.
 
 \subsection{Linear Regression with Gradient Descent Methods}
-In the first set of experiments, we are using a dataset in the form of a polynomial $f(x) = 5x^2 + 7x +3$ over the interval $x \in [0,1)$. We began with the most simple method, plain gradient descent, which we used with a constant learning rate. We tested the values $\eta \in \{ 0.1, 0.01, 0.001, 0.0001\}$ to find the best possible value to fixate for our experiments\footnote{The plots showing our testing can be found on GitHub in the directory \texttt{figures/all\_plots}.}, and based on this test, we saw that we had the best results when $\eta = 0.1$. With this learning rate, we studied convergence speed towards the minimum when using plain gradient descent with and with momentum. The plot of this (and the comparison to the analytical solution) is in figure \ref{fig:plainVSanalytical}, up to 10 epochs \cite{mediumEpochNumber}\cite{epochsBreastCancerArticle}.
+In the first set of experiments, we are using a dataset in the form of a polynomial $f(x) = 5x^2 + 7x +3$ over the interval $x \in [0,1)$. We began with the most simple method, plain gradient descent, which we used with a constant learning rate. We tested the values $\eta \in \{ 0.1, 0.01, 0.001, 0.0001\}$ to find the best possible value to fixate for our experiments\footnote{The plots showing our testing can be found on our GitHub in the directory \texttt{figures/all\_plots}.}, and based on this test, we saw that we had the best results when $\eta = 0.1$. With this learning rate, we studied convergence speed towards the minimum when using plain gradient descent with and with momentum. The plot of this (and the comparison to the analytical solution) is in figure \ref{fig:plainVSanalytical}, up to 10 epochs \cite{mediumEpochNumber}\cite{epochsBreastCancerArticle}.
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/all_plots/plain_mse_pr_iter_eta_1e-1.png}
@@ -37,7 +37,7 @@ Next, we looked at the methods with adaptive learning rates. All methods were in
     \label{fig:MSEGD}
 \end{figure}
 
-As part of our testing process, we compared the performance of our gradients to that of the automatic differentiation library Autograd \cite{autograd}. Since our tests pass\footnote{Tests can be found on our GitHub: \url{https://github.com/emmastorberg/FYS-STK4155_Project2/blob/main/tests.py}}, we expected our implementations to give quite similar results as these pre-existing methods, which they did.
+As part of our testing process, we compared the performance of our gradients to that of the automatic differentiation library Autograd \cite{autograd}. Since our tests pass\footnote{All code (including tests) can be found on our GitHub: \url{https://github.com/emmastorberg/FYS-STK4155_Project2/}}, we expected our implementations to give quite similar results as these pre-existing methods, which they did.
 \vspace{3cm}
 
 Up to this point, we have only used OLS. When we use ridge regression instead, there is the additional hyperparameter $\lambda$ to consider. We performed a grid search to determine what combination of $\lambda$ and gradient descent method to choose, and tested $\lambda \in \{10^{-5}, 10^{-4}, 10^{-3}, 10^{-2}\}$ against five of the seven methods we tested for OLS in figure \ref{fig:MSEGD} (AdaGrad is excluded because of overall poor performance, as we also see in the figure \ref{fig:MSEGD}). The grid search table can be seen in figure \ref{fig:gridsearch_ridge}, where it is clear that smaller values of $\lambda$ do best, so we will use $\lambda = 0.00001$.
@@ -55,11 +55,11 @@ We saw that the optimal gradient descent methods for linear regression were RMSP
 
 There is an enormous number of possible neural networks we can create even with only the relatively few gradient descent methods and activation functions at our disposal, in addition to the limitation of computation time. We eliminated a few degrees of freedom here by sticking to Adam as our gradient descent method (based on its performance in the experiments up to this point), and with ReLU as the activation function for the outer layer, guided by the theoretical intuition of what values it can produce (only positive values; the range of our polynomial $f(x) = 5x^2 + 7x + 3$ is positive real numbers only).
 
-To construct the network, we tried to sequentially eliminate degrees of freedom by fixating certain parameters, and thereafter exploring slight modifications to these. We started by using the same number of nodes per hidden layer, and performing a grid search to find the best combination. The results of this are shown in figure \ref{fig:gridsearch_numpred_layers_nodes}, with ReLU activating all hidden layers as well as the output layer. As we can see, there are many options that have low MSEs (dark color). We will choose a network with four nodes and four hidden layers for simplicity, which had an MSE of 0.09854. Also of note is that the lightest sections with high MSE predict zero everywhere, which is an unexpected finding.  
+To construct the network, we tried to sequentially eliminate degrees of freedom by fixating certain parameters, and thereafter exploring slight modifications to these. We started by using the same number of nodes per hidden layer, and performing a grid search to find the best combination. The results of this are shown in figure \ref{fig:gridsearch_numpred_layers_nodes}, with ReLU activating all hidden layers as well as the output layer. As we can see, there are many options that have low MSEs (dark color). We will choose a network with four nodes and four hidden layers for simplicity, which had an MSE of 0.09854. Also of note is that the lightest sections with high MSE are from networks that predict zero everywhere, which is an unexpected finding.  
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/all_plots/gridsearch_numpred_layers_nodes.png}
-    \caption{Grid search table showing the MSE of neural networks with varying number of hidden layers, with a fixed number of nodes per layer and ReLU on all layers.}
+    \caption{Grid search table showing the MSE of neural networks with varying number of hidden layers ($y$-axis), with a fixed number of nodes per layer ($x$-axis) and ReLU on all layers.}
     \label{fig:gridsearch_numpred_layers_nodes}
 \end{figure}
 
@@ -83,7 +83,7 @@ We attempted some slight variations to the hidden layers, the nodes in them and 
     \hline
     Scaling of data & \texttt{StandardScaler} \\
     \hline
-    Mini-batches number (epochs) & $M = 4$ \\
+    Mini-batch number (epochs) & $M = 4$ \\
     \hline
     Mini-batch size & $20$ (test data) \\
     \hline
@@ -112,11 +112,11 @@ We attempted some slight variations to the hidden layers, the nodes in them and 
     Output layer & 1 node, ReLU \\
     \hline
   \end{tabular}
-  \caption{The chosen hyperparameters for best performance in numerical prediction task.}
+  \caption{The chosen hyperparameters and other relevant values for best performance in numerical prediction task.}
   \label{tab:numericalprediction}
 \end{table}
 
-The neural network described above was able to predict with an MSE around 0.08 on the testing data, as we see in figure \ref{fig:numericalprediction}. This is overall a decent performance, but we also see that our linear regression methods (as well as ridge regression with Scikit-Learn) perform much better with less tuning required. We also show the predictions made by each method in figure \ref{fig:predictioncomparison}. As we can see, it seems that the best method overall for this task is \textcolor{red}{(method)} with parameters \textcolor{red}{(parameters)}. 
+The neural network described above was able to predict with an MSE around 2.5 on the testing data, as we see in figure \ref{fig:numericalprediction}. This is overall a decent performance, but we also see that our linear regression methods (as well as ridge regression with Scikit-Learn) perform much better, with less tuning required. We also show the predictions made by each method in figure \ref{fig:predictioncomparison}. As we can see, most of the linear regression methods excel and are barely distinguishable from the exact solution, while the neural networks sticks out from the rest. 
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/all_plots/numericalprediction.png}
@@ -126,24 +126,26 @@ The neural network described above was able to predict with an MSE around 0.08 o
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figures/placeholders/predictioncomparison.png}
+    \includegraphics[width=\linewidth]{figures/all_plots/predictioncomparison.png}
     \caption{Comparison of predictions with optimal versions of all methods shown on scaled input data.}
     \label{fig:predictioncomparison}
 \end{figure}
-
+\clearpage
 \subsection{Classification with Neural Network}
-Moving on to the classification task, we once again faced the issue of an extreme number of possibilities to test in order to construct the best-performing network. We limited our scope to only \textcolor{red}{(method)} with parameters \textcolor{red}{(parameters)}.
+Moving on to the classification task, we once again faced the issue of an extreme number of possibilities to test in order to construct the optimal network. We limited our scope to only the optimizer Adam with $\rho_1 = 0.9, \rho_2 = 0.99$ and $\delta = 10^{-8}$ as before.
 
-\subsubsection{First Attempt with Our Own Implementation}
+\subsubsection{First Attempt with Our Own Code}
 Similar to the procedure in the creation of a network for numerical prediction, to make the optimal network for binary classification, we first employed a grid search of a fixed number of nodes per layer, and thereafter we altered the activation function on the hidden layers to see what gave the best results. In this process, we uncovered an error in the implementation. It looked as though the network predicted the average of the target vector, which gave an accuracy approximately equal to the frequency of target value 1 in the output array (since we are working with binary classification for this dataset). 
 
 The source of the error, as well as its solution, remains elusive. We studied the implementation and behavior of our network extensively. Unit testing also passes for all of our methods\footnote{See our GitHub: \url{https://github.com/emmastorberg/FYS-STK4155_Project2}}.  
 
 We initially scaled our data with \texttt{StandardScaler}, which we thought might be the issue, but changing the scaling to \texttt{MinMaxScaler} (also from Scikit-Learn \cite{sklearnScaling}) offered only an incremental change (from an accuracy of approximately 0.62 to 0.63). All gradient descent methods had also passed rigorous unit testing, and we also knew from the experiments in the previous section on the numerical prediction task that our neural network code was capable of producing reasonable results from a theoretical standpoint. 
 
-We tested our network on different datasets, including the iris dataset \cite{irisdataset}, which is a common and beginner-friendly dataset used for testing classification networks. Our implementation\footnote{We activate the output layer with another activation function better for multiclass classification, known as the \emph{softmax} function \cite{softmax}. Its definition is given in appendix A.} performs well on this dataset when scaled with \texttt{StandardScaler}, though not with \texttt{MinMaxScaler}. This showed that it was able to do some classification tasks, so we hoped the implementation was not the problem, but rather that the choice of parameters happened to lead us to a local minimum, which is why the accuracy stopped improving at an early iteration. However, an identical instantiation with PyTorch, an optimized tensor library for deep learning \cite{pytorch}, creates a network that is able to classify the data points without issue, so the instantiation and choice of parameters is most likely not the problem.
+Next, we tested our network on different datasets, including the iris dataset \cite{irisdataset}, which is a common and beginner-friendly dataset used for testing classification networks. 
 
-These confusing findings left us with an unclear path towards analyzing our code implementation on breast cancer data, as was the goal of this project. We found that through systematic testing and trial and error, we could achieve accuracy as high as \textcolor{red}{(accuracy)}\% on the iris data. However, seeing as this is a multiclass rather than binary classification problem, continuing to work with a network implemented with our own code on the iris dataset will leave us unable to compare our results to a logistic regression, nor will we be exploring the application of machine learning methods in the medical field, as was our initial motivation.
+Our implementation\footnote{We activate the output layer with another activation function better for multiclass classification, known as the \emph{softmax} function \cite{softmax}. Its definition is given in appendix A.} performs well on the iris data when scaled with \texttt{StandardScaler}, though not with \texttt{MinMaxScaler}. This showed that it was able to do some classification tasks, so we hoped the implementation was not the problem, but rather that the choice of parameters happened to lead us to a local minimum, which is why the accuracy stopped improving at an early iteration. However, an identical instantiation with PyTorch, an optimized tensor library for deep learning \cite{pytorch}, creates a network that is able to classify the data points without issue, so the instantiation and choice of parameters is most likely not the problem.
+
+These confusing findings left us with an unclear path towards analyzing our code implementation on breast cancer data, as was the goal of this project. We found that through systematic testing and trial and error, we could achieve accuracy as high as 1 on the iris data when testing the whole dataset\footnote{There is a risk of overfitting in this case, but it goes to show that the neural network is still making sensible predictions, which it does not do at all with the breast cancer data.}. However, seeing as this is a multiclass rather than binary classification problem, continuing to work with a network implemented with our own code on the iris dataset will leave us unable to compare our results to a logistic regression, nor will we be exploring the application of machine learning methods in the medical field, as was our initial motivation.
 
 Therefore we ultimately made the decision to continue working with the breast cancer data using PyTorch to explore the optimal instantiation of a network for such a dataset. The resulting neural network will also be compared to a logistic regression. 
 
@@ -155,11 +157,11 @@ Our search for the optimal set of hyperparameters for the task was in part syste
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/placeholders/gridsearch_layers_nodes.png}
-    \caption{\textcolor{purple}{Heat map showing the accuracy for the neural net (on the cancer dataset), as a function of hidden layers (1-5) and nodes in each hidden layer (1-10)}}
+    \caption{Grid search table showing the accuracy of neural networks with varying number of hidden layers, with a fixed number of nodes per layer and Leaky ReLU on all hidden layers, and sigmoid on the output layer.}
     \label{fig:gridsearch_layers_nodes}
 \end{figure}
 
-As we can see, the optimal result seems to be \textcolor{red}{(nodes in each layer explained here)}. Using this as a starting point for further exploration, we continued looking into if a different set of activation functions for the hidden layers would have any effect. In figure \ref{fig:activationfunctions_cost}, we see all four options for activation functions on a neural network with \textcolor{red}{(nodes in each layer explained here)}, as determined in figure \ref{fig:gridsearch_layers_nodes}. We see that \textcolor{red}{(activation function)} works \textcolor{red}{better/worse} than our initial test using sigmoid everywhere, so we continued tweaking a network in the form of \textcolor{red}{best finding here}.
+As we can see, the optimal result seems to be with fewer hidden layers, as overall one or two hidden layers performs the best. Using this as a starting point for further exploration, we continued looking into if a different set of activation functions for the hidden layers would have any effect. In figure \ref{fig:activationfunctions_cost}, we see all three options for activation functions on a neural network with \textcolor{red}{(nodes in each layer explained here)}, as determined in figure \ref{fig:gridsearch_layers_nodes}. We see that \textcolor{red}{(activation function)} works \textcolor{red}{better/worse} than our initial test using sigmoid everywhere, so we continued tweaking a network in the form of \textcolor{red}{best finding here}.
 
 \begin{figure}
     \centering
@@ -181,11 +183,11 @@ Through less organized trial and error testing, we began with the optimal networ
     \hline
     Scaling of data & \texttt{StandardScaler} \\
     \hline
-    Number of mini-batches (epochs) & $M =$ \\
+    Mini-batch number (epochs) & $M = $ \\
     \hline
     Mini-batch size & $\frac{n}{M} = $ \\
     \hline
-    Gradient descent method & Adam \\
+    Optimizer & Adam \\
     \hline
     Initial learning rate & $\eta = $ \\
     \hline
@@ -206,7 +208,7 @@ Through less organized trial and error testing, we began with the optimal networ
     Output layer & Size, activation \\
     \hline
   \end{tabular}
-  \caption{Table showing hyperparameters chosen for best-performing neural network in classification task}
+  \caption{Table showing values used in the best-performing neural network in classification task}
   \label{tab:classificationtask}
 \end{table}
 %\textcolor{magenta}{Figure: Activation functions. Plot the accuracy of the network (on cancer data) with different combinations of activation functions [leaky relu, relu, only sigmoid, softmax] (although I believe all should have sigmoid in the final layer), as a function of layers. (I think we should have a fixed number of nodes, unless we want to grid search this and choose the best)} \\ 
