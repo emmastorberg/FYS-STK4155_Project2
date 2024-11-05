@@ -14,15 +14,13 @@ Next, we looked at our stochastic methods, with and without momentum. In this ca
 \[
 \eta_t = (1- \frac{t}{5})0.1 + \frac{t}{5} 0.001
 \]
-where we found the value $\eta_0 = 0.1$ after a few tests, as well as consulting the literature. We also kept the mini-batch size fixed at 4, which we found produced decent values in this case. The comparison of the MSE with and without momentum as a function of epochs is displayed in figure \ref{fig:sgdVSanalytical}. 
+where we found the value $\eta_0 = 0.1$ after a few tests, as well as consulting the literature. We also kept the mini-batch size fixed at 4, which we found produced decent values in this case. The comparison of the MSE with and without momentum as a function of epochs is displayed in figure \ref{fig:sgdVSanalytical}. We also found our that when timed, stochastic methods gave us results quicker than the plain versions, with minimal detriment to the MSE. Therefore, from this point on, we will continue using our stochastic methods for computational efficiency.
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/all_plots/sgd_mse_pr_epoch_eta_1e-1.png}
     \caption{Stochastic gradient descent (SGD) with and without momentum compared to the analytical solution, with a constant learning rate of $\eta_0 = 0.1$ and a momentum parameter $\gamma = 0.5$. The size of the mini-batches is also fixed at 4.}
     \label{fig:sgdVSanalytical}
 \end{figure}
-
-When timed, stochastic gradient descent gave us results quicker, with minimal detriment to the MSE. Therefore, from this point on, we will therefore continue using stochastic instead of plain gradient descent for computational efficiency.
 
 Next, we looked at the methods with adaptive learning rates. All methods were initialized with the same global learning rate $\eta = 0.1$ to begin with, as this was the best result in both of our previous tests. We wanted to see how the different methods of adaptive learning rate converged, and if this behavior was consistent with the theory. The development of the MSE over epochs is shown in figure \ref{fig:MSEGD}. We see faster convergence in methods with momentum.
 % \begin{figure}
@@ -39,11 +37,12 @@ Next, we looked at the methods with adaptive learning rates. All methods were in
     \label{fig:MSEGD}
 \end{figure}
 
-As part of our testing process, we compared the performance of our gradients to that of the automatic differentiation library Autograd \cite{autograd}. Since our tests pass\footnote{Tests can be found on our GitHub: \url{https://github.com/emmastorberg/FYS-STK4155_Project2/blob/main/tests.py}}, we expected our implementations to give quite similar results as these pre-existing methods, which they did. 
+As part of our testing process, we compared the performance of our gradients to that of the automatic differentiation library Autograd \cite{autograd}. Since our tests pass\footnote{Tests can be found on our GitHub: \url{https://github.com/emmastorberg/FYS-STK4155_Project2/blob/main/tests.py}}, we expected our implementations to give quite similar results as these pre-existing methods, which they did. \\
+\newline
 
-Up to this point, we have only looked at OLS. When we use ridge regression instead, there is the additional hyperparameter $\lambda$ to consider. We performed a grid search to determine what combination of $\lambda$ and gradient descent method to choose, and tested $\lambda \in \{10^{-5}, 10^{-4}, 10^{-3}, 10^{-2}\}$ against five of the seven methods we tested for OLS in figure \ref{fig:MSEGD} (AdaGrad is excluded because of overall poor performance, as we also see in the figure \ref{fig:MSEGD}). The grid search table can be seen in figure \ref{fig:gridsearch_ridge}. 
+Up to this point, we have only used OLS. When we use ridge regression instead, there is the additional hyperparameter $\lambda$ to consider. We performed a grid search to determine what combination of $\lambda$ and gradient descent method to choose, and tested $\lambda \in \{10^{-5}, 10^{-4}, 10^{-3}, 10^{-2}\}$ against five of the seven methods we tested for OLS in figure \ref{fig:MSEGD} (AdaGrad is excluded because of overall poor performance, as we also see in the figure \ref{fig:MSEGD}). The grid search table can be seen in figure \ref{fig:gridsearch_ridge}, where it is clear that smaller values of $\lambda$ do best, so we will use $\lambda = 0.00001$.
 
-It is difficult to visually determine exactly which method is best, and upon reading off the values numerically, we also found minimal differences in the darkest regions. This is also consistent with the plots, where we see all methods except AdaGrad seem to converge nicely. Therefore, we determine that we will use Adam as we continue to use gradient descent in a neural network, as this seems consistent with the literature on the subject. We will also use $\lambda = 0.00001$.
+It is difficult to visually determine exactly which method is best, and upon reading off the values numerically, we also found minimal differences in the darkest regions. This is also consistent with the plots, where we see all methods except AdaGrad seem to converge nicely. Therefore, we determine that we will use Adam as we continue to use gradient descent in a neural network, as this seems in line with the literature on the subject.
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/all_plots/gridsearch_ridge.png}
@@ -52,22 +51,22 @@ It is difficult to visually determine exactly which method is best, and upon rea
 \end{figure}
 
 \subsection{Numerical Prediction with Neural Network}
-We saw that the optimal gradient descent methods for linear regression were RMSProp (with and without momentum) and Adam for OLS, and we chose Adam with $\lambda = 0.00001$ as the best-performing combination for ridge regression. There is an enormous number of possible neural networks we can create even with only the relatively few gradient descent methods and activation functions at our disposal, in addition to the limitation of computation time. We eliminated a few degrees of freedom here by sticking to Adam as our gradient descent method (based on its performance in the experiments up to this point), and with ReLU as the activation function for the outer layer, guided by the theoretical intuition of what values it can produce (only positive values; the range of our polynomial $f(x) = 5x^2 + 7x + 3$ is positive real numbers only).
+We saw that the optimal gradient descent methods for linear regression were RMSProp (with and without momentum) and Adam for OLS, and we chose Adam with $\lambda = 0.00001$ as the best-performing combination for ridge regression. 
 
-To construct the network, we tried to sequentially eliminate degrees of freedom by fixating certain parameters, and thereafter exploring slight modifications to these. We started by using the same number of nodes per layer, and performing a grid search to find the best combination. The results of this are shown in figure \ref{fig:gridsearch_numpred_layers_nodes}, with ReLU activating all hidden layers as well as the output layer.
+There is an enormous number of possible neural networks we can create even with only the relatively few gradient descent methods and activation functions at our disposal, in addition to the limitation of computation time. We eliminated a few degrees of freedom here by sticking to Adam as our gradient descent method (based on its performance in the experiments up to this point), and with ReLU as the activation function for the outer layer, guided by the theoretical intuition of what values it can produce (only positive values; the range of our polynomial $f(x) = 5x^2 + 7x + 3$ is positive real numbers only).
+
+To construct the network, we tried to sequentially eliminate degrees of freedom by fixating certain parameters, and thereafter exploring slight modifications to these. We started by using the same number of nodes per hidden layer, and performing a grid search to find the best combination. The results of this are shown in figure \ref{fig:gridsearch_numpred_layers_nodes}, with ReLU activating all hidden layers as well as the output layer. As we can see, there are many options that have low MSEs (dark color). We will choose a network with four nodes and four hidden layers for simplicity, which had an MSE of 0.09854. Also of note is that the lightest sections with high MSE predict zero everywhere, which is an unexpected finding.  
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{figures/placeholders/gridsearch_numpred_layers_nodes.png}
-    \caption{Grid search table showing the MSE of neural networks with varying number of layers, with a fixed number of nodes per layer. ReLU activates all layers.}
+    \includegraphics[width=\linewidth]{figures/all_plots/gridsearch_numpred_layers_nodes.png}
+    \caption{Grid search table showing the MSE of neural networks with varying number of hidden layers, with a fixed number of nodes per layer and ReLU on all layers.}
     \label{fig:gridsearch_numpred_layers_nodes}
 \end{figure}
-
-As we can see, there are many options that have low MSEs (dark color). We will choose a network with four nodes and four hidden layers for simplicity. ALso of note is that the lightest sections with high MSE set predict zero everywhere, which is an unexpected finding.  
 
 Next, we tried varying what activation functions to use on the hidden layers. The plot of the resulting MSEs is shown in figure \ref{fig:activationfunctions_cost_numpred}. It seems clear that \textcolor{red}{(activation function)} activating the hidden layers is best in this case, so a neural network with \textcolor{red}{(NN explained here)} became the basis for further modifications in hopes of improving performance. 
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{figures/placeholders/activationfunctions_cost_numpred.png}
+    \includegraphics[width=\linewidth]{figures/all_plots/activationfunctions_cost_numpred.png}
     \caption{\textcolor{purple}{Cost as a function of number of epochs, testing for four different neural networks. They all have the size determined in the grid search, but now we want to see if changing the activation of the hidden layers gives us any improvements.}}
     \label{fig:activationfunctions_cost_numpred}
 \end{figure}
@@ -113,7 +112,7 @@ With slight variations to the hidden layers, the number of nodes in them and wha
   \label{tab:numericalprediction}
 \end{table}
 
-The neural network described \textcolor{blue}{above} was able to predict with an accuracy of \textcolor{red}{(value)}\%. The MSE of our best-performing neural network, OLS and ridge regression compared to a neural network created with Scikit-Learn can be seen in figure \ref{fig:numericalprediction}; a similar comparison of $R^2$ score can be found in figure \ref{fig:numericalpredictionR2} in appendix \textcolor{red}{(LETTER)}. We also show the predictions made by each method in figure \ref{fig:predictioncomparison}.
+The neural network described \textcolor{blue}{above} was able to predict with an accuracy of \textcolor{red}{(value)}\%. The MSE of our best-performing neural network, OLS and ridge regression compared to a neural network created with Scikit-Learn can be seen in figure \ref{fig:numericalprediction}. We also show the predictions made by each method in figure \ref{fig:predictioncomparison}.
 
 \begin{figure}
     \centering
@@ -143,7 +142,7 @@ We initially scaled our data with \texttt{StandardScaler}, which we thought migh
 
 We tested our network on different datasets, including the iris dataset \cite{irisdataset}, which is a common and beginner-friendly dataset used for testing classification networks. Our implementation\footnote{We activate the output layer with another activation function better for multiclass classification, known as the \emph{softmax} function \cite{softmax}. Its definition is given in appendix A.} performs well on this dataset when scaled with \texttt{StandardScaler}, though not with \texttt{MinMaxScaler}. This showed that it was able to do some classification tasks, so we hoped the implementation was not the problem, but rather that the choice of parameters happened to lead us to a local minimum, which is why the accuracy stopped improving at an early iteration. However, an identical instantiation with PyTorch, an optimized tensor library for deep learning \cite{pytorch}, creates a network that is able to classify the data points without issue, so the instantiation and choice of parameters is most likely not the problem.
 
-These confusing findings left us with an unclear path towards analyzing our code implementation on breast cancer data, as was the goal of this project. We found that through trial and error, we could achieve accuracy as high as \textcolor{red}{(accuracy)} \%. However, seeing as this is a multiclass rather than binary classification problem, continuing to work with this network and dataset will leave us unable to compare our results to a logistic regression, nor will we be exploring the application of machine learning methods in the medical field, as was our initial motivation.
+These confusing findings left us with an unclear path towards analyzing our code implementation on breast cancer data, as was the goal of this project. We found that through systematic testing and trial and error, we could achieve accuracy as high as \textcolor{red}{(accuracy)}\% on the iris data. However, seeing as this is a multiclass rather than binary classification problem, continuing to work with this network and dataset will leave us unable to compare our results to a logistic regression, nor will we be exploring the application of machine learning methods in the medical field, as was our initial motivation.
 
 Therefore we ultimately made the decision to continue working with the breast cancer data using PyTorch to explore the optimal instantiation of a network for such a dataset. The resulting neural network will also be compared to a logistic regression. 
 
@@ -234,7 +233,7 @@ The network as described \textcolor{blue}{above} has \textcolor{red}{(accuracy)}
 % \end{figure}
 
 \subsection{Classification with Logistic Regression}
-As discussed, an alternative to a neural network requiring far less tuning is logistic regression. This corresponds to a network with no hidden layers, activated by the sigmoid function. The resulting confusion matrix is shown in figure \ref{fig:logreg}. 
+As discussed, an alternative to a neural network requiring far less tuning is logistic regression. This corresponds to a network with no hidden layers, activated by the sigmoid function. The resulting confusion matrix is shown in figure \ref{fig:logreg}. As we can see, the performance of logistic regression alone is relatively poor compared to a neural network. However, we experienced how it requires much less time to set up and run, which should be taken into account when evaluating these methods.
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/plots/logreg.png}
@@ -242,7 +241,6 @@ As discussed, an alternative to a neural network requiring far less tuning is lo
     \label{fig:logreg}
 \end{figure}
 
-As we can see, the performance of logistic regression alone is relatively poor compared to a neural network. However, we experienced how it requires much less time to set up and run, which should be taken into account when evaluating these methods.
 %\textcolor{magenta}{Should not be in report, but we should print accuracy/cf before and after scaling with the StandardScaler. Expect accuracy to increase. We can just cite on of our previous reports on scaling with StandardScaler}
 
 
