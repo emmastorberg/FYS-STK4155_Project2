@@ -126,8 +126,6 @@ def three_stacked_subplots(epochs: np.ndarray,
     else:
         plt.show()
 
-def gridsearch(parameter1, parameter2):
-    ...
 
 def mse_linreg_comparison(
         epochs: np.ndarray, 
@@ -146,9 +144,10 @@ def mse_linreg_comparison(
     plt.ylabel("MSE")
 
     plt.title("Comparison of Optimal Methods for Polynomial Approximation")
+    plt.legend()
 
     if save:
-        plt.savefig("numericalprediction.png")
+        plt.savefig("figures/all_plots/numericalprediction.png")
     else:
         plt.show()
 
