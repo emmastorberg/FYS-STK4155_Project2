@@ -1,7 +1,7 @@
 [![FYS-STK4155_Project2](https://github.com/emmastorberg/FYS-STK4155_Project2/actions/workflows/pytest.yml/badge.svg)](https://github.com/emmastorberg/FYS-STK4155_Project2/actions/workflows/pytest.yml)
 # FYS-STK4155_Project2
 
-´
+
 
     ├── data                            # Contains other datasets used for testing our network
     ├── data_analysis
@@ -25,7 +25,7 @@
     ├── tests.py
     ├── torch_plot.py                  # Classification with pytorch 
     └── requirements.txt                # Python libraries needed for running the code. Install with ´pip -r requirements.txt´
-´
+
 already tested:
 - the tests in tests.py
 - correct ouput shape
