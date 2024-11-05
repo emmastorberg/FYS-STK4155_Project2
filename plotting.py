@@ -173,7 +173,7 @@ def accuracy_with_different_activationfuncs_in_hidden_layers(
         plt.title("Different Activations of Hidden Layers in Numerical Prediction Task")
 
         if save:
-            plt.savefig("activationfunctions_cost_numpred.png")
+            plt.savefig("figures/all_plots/activationfunctions_cost_numpred.png")
         else:
             plt.show()
     else:

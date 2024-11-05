@@ -1,4 +1,5 @@
 from typing import Optional
+import copy
 
 from tqdm import tqdm
 import autograd.numpy as np
@@ -46,13 +47,9 @@ class Plain(GD):
                     low_grad_counter = 0
 
                 if self.save_info_per_iter:
-                    if len(params) == 1:
-                        self.info[i] = np.copy(params[0])
-                    else:
-                        self.info[i] = params.copy()
+                    self.info[i] = copy.deepcopy(params)
                     if low_grad_counter == 10:
                         self.info[i+1:] = [np.copy(params[0])] * (self.max_iter - i)
-
                 i += 1
                 pbar.update()
 

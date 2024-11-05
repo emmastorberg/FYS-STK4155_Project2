@@ -1,4 +1,5 @@
 from typing import Optional
+import copy
 
 import numpy as np
 from tqdm import tqdm
@@ -50,6 +51,7 @@ class Stochastic(GD):
             self.info = [0] * self.n_epochs
 
         m = len(input) // self.M
+        a = [np.array([1, 2, 3])]
         for epoch in tqdm(range(self.n_epochs)):
             m_range = np.arange(0, m)
             np.random.shuffle(m_range)
@@ -62,10 +64,7 @@ class Stochastic(GD):
                 params = self.step(gradient, params, epoch)
 
             if self.save_info_per_iter:
-                if len(params) == 1:
-                    self.info[epoch] = np.copy(params[0])
-                else:
-                    self.info[epoch] = params.copy()
+                self.info[epoch] = copy.deepcopy(params)
 
         return params
         
