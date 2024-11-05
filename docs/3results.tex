@@ -150,27 +150,20 @@ These confusing findings left us with an unclear path towards analyzing our code
 Therefore we ultimately made the decision to continue working with the breast cancer data using PyTorch to explore the optimal instantiation of a network for such a dataset. The resulting neural network will also be compared to a logistic regression. 
 
 \subsubsection{Continued Exploration with PyTorch}
-Our search for the optimal set of hyperparameters for the task was in part systematic, and in part educated guesswork and trial and error. The first systematic test was a grid search, where we fixed the number of nodes in each layer. Throughout this task, we always used sigmoid as the activation function. A grid search table showing the best combination of number of layers and nodes per layer (with sigmoid activating all layers) is shown in figure \ref{fig:gridsearch_layers_nodes}. 
+Our search for the optimal set of hyperparameters for the task was in part systematic, and in part educated guesswork and trial and error. The first systematic test was a grid search, where we fixed the number of nodes in each layer. Throughout this task, we always used sigmoid as the activation function. A grid search table showing the best combination of number of layers and nodes per layer (with sigmoid activating all layers) is shown in figure \ref{fig:gridsearch_layers_nodes}. As we can see, the optimal result seems to be with fewer hidden layers, as overall one or two hidden layers performs the best. 
 
 % our final activation function, and kept the activation functions of the hidden layers the same. Of our four options, having \textcolor{red}{(activation function)} activate all hidden layers resulted in highest accuracy overall. 
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figures/placeholders/gridsearch_layers_nodes.png}
+    \includegraphics[width=\linewidth]{figures/all_plots/grid_search_layer_nodes.png}
     \caption{Grid search table showing the accuracy of neural networks with varying number of hidden layers, with a fixed number of nodes per layer and Leaky ReLU on all hidden layers, and sigmoid on the output layer.}
     \label{fig:gridsearch_layers_nodes}
 \end{figure}
 
-As we can see, the optimal result seems to be with fewer hidden layers, as overall one or two hidden layers performs the best. Using this as a starting point for further exploration, we continued looking into if a different set of activation functions for the hidden layers would have any effect. In figure \ref{fig:activationfunctions_cost}, we see all three options for activation functions on a neural network with \textcolor{red}{(nodes in each layer explained here)}, as determined in figure \ref{fig:gridsearch_layers_nodes}. We see that \textcolor{red}{(activation function)} works \textcolor{red}{better/worse} than our initial test using sigmoid everywhere, so we continued tweaking a network in the form of \textcolor{red}{best finding here}.
+Using this as a starting point for further exploration, we continued looking into if a different set of activation functions for the hidden layers would have any effect, but Leaky ReLU performed well compared to the other activation functions, with only minimal improvement with use of ReLU. The plot of this can be found in appendix B, figure \ref{fig:activationfunctions_cost}. 
 
-\begin{figure}
-    \centering
-    \includegraphics[width=\linewidth]{figures/placeholders/activationfunctions_cost.png}
-    \caption{\textcolor{purple}{Cost as a function of number of epochs, testing for four different neural networks. They all have the size determined in the grid search, but now we want to see if changing the activation of the hidden layers gives us any improvements.}}
-    \label{fig:activationfunctions_cost}
-\end{figure}
-
-Through less organized trial and error testing, we began with the optimal network so far, with size \textcolor{red}{(layer and node info)} and \textcolor{red}{(activation function)} on all hidden layers. We were able to find that with \textcolor{red}{(activation function on hidden layers)} and \textcolor{red}{(alternative neural network structure)}, we could now achieve an accuracy of up to \textcolor{red}{(accuracy)}\% for the Wisconsin Breast Cancer dataset. \textcolor{green}{We expected from the theory that ReLU would do well, and in particular, offer faster convergence than the other methods. This applies/does not apply in this case as well.} The full set of chosen hyperparameters for this neural network are shown in table \ref{tab:classificationtask}.
+As the networks we tested had such high accuracy scores (for instance 98\% accuracy for a network with one hidden layer and 41 nodes in that layer, or 97\% with 51 nodes, as we see in figure \ref{fig:gridsearch_layers_nodes}), we consider this good for the time being. Values of our chosen neural network are shown in table \ref{tab:classificationtask}. However, though the network has high accuracy in its predictions, we must consider what type of errors it makes before determining this is a suitable network for diagnosing cancer. The confusion matrix is shown in figure \ref{fig:confusionmatrix}.
 
 \begin{table}[h!]
   \centering
@@ -179,33 +172,19 @@ Through less organized trial and error testing, we began with the optimal networ
     \hline
     \textbf{Hyperparameter} & \textbf{Value} \\
     \hline
-    Number of data points & $n = $ \\
+    Number of data points & $n = 569$ \\
     \hline
     Scaling of data & \texttt{StandardScaler} \\
     \hline
-    Mini-batch number (epochs) & $M = $ \\
-    \hline
-    Mini-batch size & $\frac{n}{M} = $ \\
-    \hline
-    Optimizer & Adam \\
-    \hline
-    Initial learning rate & $\eta = $ \\
-    \hline
-    Decay rate of first moment & $\rho_1 =$ \\
-    \hline
-    Decay rate of second moment & $\rho_2 = $ \\
-    \hline
-    Numerical stability constant & $\delta = $ \\
+    Initial learning rate & $\eta = 0.1$ \\
     \hline
     Cost function & Cross-entropy \\
     \hline
-    Input layer & Size, activation \\
+    Input layer & 30 nodes, Leaky ReLU \\
     \hline
-    Layer 2 & Size, activation \\
+    Hidden layer & 51 nodes, Leaky ReLU \\
     \hline
-    Layer 3 & Size, activation \\
-    \hline
-    Output layer & Size, activation \\
+    Output layer & 1 node, sigmoid \\
     \hline
   \end{tabular}
   \caption{Table showing values used in the best-performing neural network in classification task}
@@ -217,11 +196,10 @@ Through less organized trial and error testing, we began with the optimal networ
 %\textcolor{purple}{Figure: Accuracy for [SGD (with and without momentum), Adagrad (with and without momentum), RMSprop and Adam] (on the legend) as a function of epochs, with a fixed learning rate}
 %We expect them to converge, some faster than others. With momentum should converge faster.
 
-The network as described \textcolor{blue}{above} has \textcolor{red}{(accuracy)}\% accuracy in its predictions overall. However, we must also consider what type of inaccuracy is most prevalent before determining this is the best network for the task. False positive and negative rate can be seen in the confusion matrix in figure \ref{fig:confusionmatrix}.
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figures/placeholders/confusionmatrix.png}
-    \caption{\textcolor{purple}{Confusion matrix for the neural net (on the cancer dataset, counting the number of TP, TN, FN and FP)}}
+    \includegraphics[width=\linewidth]{figures/plots/logreg.png}
+    \caption{Confusion matrix for our choice of neural network instantiated with PyTorch}
     \label{fig:confusionmatrix}
 \end{figure}
 
@@ -236,10 +214,10 @@ The network as described \textcolor{blue}{above} has \textcolor{red}{(accuracy)}
 % \end{figure}
 
 \subsection{Classification with Logistic Regression}
-As discussed, an alternative to a neural network requiring far less tuning is logistic regression. This corresponds to a network with no hidden layers, activated by the sigmoid function. The resulting confusion matrix is shown in figure \ref{fig:logreg}. As we can see, the performance of logistic regression alone is relatively poor compared to a neural network. However, we experienced how it requires much less time to set up and run, which should be taken into account when evaluating these methods.
+As discussed, an alternative to a neural network requiring far less tuning is logistic regression. This corresponds to a network with no hidden layers, activated by the sigmoid function. The resulting confusion matrix is shown in figure \ref{fig:logreg}. As we can see, the performance of logistic regression alone is worse compared to a neural network, though still acceptable. We view the higher false positive than false negative rate as a strength. However, we experienced how it requires much less time to set up and run, which should be taken into account when evaluating these methods.
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figures/plots/logreg.png}
+    \includegraphics[width=\linewidth]{figures/confusionmatrix.png}
     \caption{Confusion matrix from logistic regression}
     \label{fig:logreg}
 \end{figure}
