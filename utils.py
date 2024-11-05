@@ -1,8 +1,14 @@
+from collections.abc import Iterable
+
+
 import autograd.numpy as np # type: ignore
 from autograd import jacobian, grad
 from sklearn.datasets import load_iris, load_breast_cancer
 from sklearn.metrics import accuracy_score
 import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
+import seaborn as sns
 
 
 def Franke_function(x: np.ndarray, y: np.ndarray, noise: bool = True) -> np.ndarray:
@@ -227,6 +233,28 @@ def get_heart_data():
     inputs = a[:,:-1]
     targets = a[:,-1]
     return inputs, targets
+
+
+def aesthetic_2D():
+    plt.rcParams.update({
+        # Matplotlib style settings similar to seaborn's default style
+        "axes.facecolor": "#eaeaf2",
+        "axes.edgecolor": "white",
+        "axes.grid": True,
+        "grid.color": "white",
+        "grid.linestyle": "-",
+        "grid.linewidth": 1,
+        "axes.axisbelow": True,
+        "xtick.color": "gray",
+        "ytick.color": "gray",
+
+        # Additional stylistic settings
+        "figure.facecolor": "white",
+        "legend.frameon": True,
+        "legend.framealpha": 0.8,
+        "legend.fancybox": True,
+        "legend.edgecolor": 'lightgray',
+    })
 
 
 if __name__ == "__main__":
