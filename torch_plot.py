@@ -53,8 +53,8 @@ def gridsearch_pytorch(X_train_tensor, X_test_tensor, y_train_tensor, y_test_ten
     cost_func = nn.BCELoss()
     lr = 0.1
     accuracy_dict = {
-        'n_hidden_layers': [],
-        'n_nodes_pr_layer': [],
+        'Number of Hidden Layers': [],
+        'Number of Nodes per Hidden Layer': [],
         'accuracy': []
     }
 
@@ -77,13 +77,16 @@ def gridsearch_pytorch(X_train_tensor, X_test_tensor, y_train_tensor, y_test_ten
                       predicted = (test_outputs > 0.5).float()
                       accuracy = (predicted.eq(y_test_tensor).sum().item() / y_test_tensor.size(0)) * 100
 
-                accuracy_dict['num_hidden_layers'].append(num_hidden_layers)
-                accuracy_dict['node_size'].append(node_size)
+                # Append results to the dictionary
+                accuracy_dict['Number of Hidden Layers'].append(num_hidden_layers)
+                accuracy_dict['Number of Nodes per Hidden Layer'].append(node_size)
                 accuracy_dict['accuracy'].append(accuracy)
 
     df_accuracy = pd.DataFrame(accuracy_dict)
 
-    heatmap_data = df_accuracy.pivot(index='num_hidden_layers', columns='node_size', values='accuracy')
+    # Pivot the DataFrame for heatmap plotting
+    heatmap_data = df_accuracy.pivot(index='Number of Hidden Layers', columns='Number of Nodes per Hidden Layer', values='accuracy')
+
     return heatmap_data
 
 
@@ -91,12 +94,12 @@ def test_activation_pytorch(X_train_tensor, X_test_tensor, y_train_tensor, y_tes
     criterion = nn.BCELoss()
     learning_rate = 0.1
     accuracy_dict = {
-        'activation_func': [],
-        'epoch': [],
+        'Activation Function': [],
+        'Epochs': [],
         'accuracy': []
     }
 
-    for activation_func in ["sigmoid", "leaky_relu", "relu"]: 
+    for activation_func in ["sigmoid", "relu", "leaky_relu"]: 
         model = NN(input_size, node_size, num_hidden_layers, activation_func)
 
         num_epochs = 50
@@ -113,17 +116,22 @@ def test_activation_pytorch(X_train_tensor, X_test_tensor, y_train_tensor, y_tes
                     predicted = (test_outputs > 0.5).float()
                     accuracy = (predicted.eq(y_test_tensor).sum().item() / y_test_tensor.size(0)) * 100
         
-            accuracy_dict['epoch'].append(epoch)
-            accuracy_dict['activation_func'].append(activation_func)
+            # Append results to the dictionary
+            accuracy_dict['Epochs'].append(epoch)
+            accuracy_dict['Activation Function'].append(activation_func)
+
             accuracy_dict['accuracy'].append(accuracy)
 
     df_accuracy = pd.DataFrame(accuracy_dict)
-    heatmap_data = df_accuracy.pivot(index='epoch', columns='activation_func', values='accuracy')
+
+    # Pivot the DataFrame for heatmap plotting
+    heatmap_data = df_accuracy.pivot(index='Epochs', columns='Activation Function', values='accuracy')
     return heatmap_data
 
-def plot_grid_heatmap(df, save=False, annot = True):
-    sns.heatmap(df, annot=annot, cmap='coolwarm')
-    plt.title(r"Accuracy for Number of Hidden Layers and Nodes, with $\eta = 0.1$")
+def plot_grid_heatmap(df, save=False, annot = True, title=r"Accuracy for Number of Hidden Layers and Nodes, with $\eta = 0.1$"):
+    sns.heatmap(df, annot=annot)
+    plt.title(title)
+
     plt.tight_layout()
     if save:
         plt.savefig("figures/all_plots/grid_search_layer_nodes.png")
@@ -152,7 +160,7 @@ def pytorch():
     num_hidden_layers = 5
     activation_func = torch.sigmoid
     model = LogReg(input_size)
-    #model = NN(input_size, node_size, num_hidden_layers, activation_func)
+    model = NN(input_size, node_size, num_hidden_layers, activation_func)
     criterion = nn.BCELoss()  # Binary Cross-Entropy loss
     learning_rate = 0.01
     optimizer = optim.SGD(model.parameters(), lr=learning_rate)
@@ -183,7 +191,7 @@ def plot_cm(target: np.array, predicted: np.array, save = False):
     labels = [f"{v1}\n{v2}" for v1, v2 in zip(group_labels,group_percentages)]
     labels = np.array(labels).reshape(2,2)
     sns.heatmap(cf, annot=labels, fmt="")
-    plt.title("Confusion Matrix for Breast Cancer Predictions Using PyTorch")
+    plt.title("Confusion Matrix for Breast Cancer Predictions")
     if save:
         plt.savefig("figures/confusionmatrix.png")
     else:
@@ -195,7 +203,14 @@ def plot_activation(activation_df: pd.DataFrame, save=False):
     plt.xlabel("Epochs")
     plt.ylabel("Accuracy")
     for activation in activation_df.columns:
-        plt.plot(activation_df.index, activation_df[activation], marker='o', label=activation)
+        if activation == "relu":
+            label="ReLU"
+        elif activation == "sigmoid":
+            label="Sigmoid"
+        elif activation == "leaky_relu":
+            label="Leaky ReLU"
+
+        plt.plot(activation_df.index, activation_df[activation], label=label)
     plt.legend()
 
     if save:
