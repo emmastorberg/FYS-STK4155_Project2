@@ -8,6 +8,7 @@ from .gradient_descent import GD
 
 
 class Stochastic(GD):
+    """Stochastic Gradient Descent."""
     def __init__(
             self, 
             lr: float = 0.01,
@@ -19,6 +20,19 @@ class Stochastic(GD):
             decay_iter: int = 5,
             save_info_per_iter: bool = False,
         ) -> None:
+        """Initialize the class.
+
+        Args:
+            lr (float, optional): Learning rate. Defaults to 0.01.
+            lr_schedule (str): Learning rate schedule. Possible values are "fixed" and "linear". Defaults to "fixed".
+            momentum (Optional[float], optional): Momentum parameter. Defaults to 0.0.
+            tuner (Optional[str], optional): 
+                Optional adaptive learning rate method. Options are "adam", "adagrad" and "rmsprop". Defaults to None.
+            M (int): Size of mini batces. Defaults to 5.
+            n_epochs (int): Number of epochs. Defaults to 10.
+            decay_iter (int): If `lr_schedule` is "linear", at which iteration to stop the linear decay. Defaluts to 5.
+            save_info_per_iter (bool, optional): Save the parameters at each iteration. Defaults to False.
+        """
         super().__init__(lr, momentum, tuner)
         self.lr_schedule = lr_schedule
 
@@ -31,7 +45,15 @@ class Stochastic(GD):
         if not (lr_schedule in ["fixed", "linear"]):
             raise ValueError
 
-    def learning_schedule(self, epoch) -> float:
+    def learning_schedule(self, epoch: int) -> float:
+        """Return learning rate for specified learning rate scedule.
+
+        Args:
+            epoch (int): The current epoch.
+
+        Returns:
+            float: Learning rate.
+        """
         if self.lr_schedule == "fixed":
             return self.lr0
         elif self.lr_schedule == "linear":
@@ -42,6 +64,16 @@ class Stochastic(GD):
                 return self.lr0 * 0.01
 
     def gradient_descent(self, input, params, target):
+        """Perform the gradient descent.
+
+        Args:
+            input (np.ndarray): Input values.
+            params (list[np.ndarray]): Parameters to be optimized.
+            target (np.ndarray): Target values.
+
+        Returns:
+            list[np.ndarray]: Optimized parameters.
+        """
         if self.tuner is not None:
             self.m = [0.0] * len(params)
             self.s = [0.0] * len(params)
