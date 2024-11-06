@@ -12,7 +12,7 @@
     ├── figures                         # Images of the plotted results
     ├── relevant_weekly_exercises       # Not in the project delivery
     ├── breast_cancer.ipynb
-    ├── FYS-STK4155_Project2_Final_Iris_Frida_Emma.pdf   # The report to be submitted for this project
+    ├── FYS-STK4155_Project2_Iris_Frida_Emma_FinalCorrected.pdf   # The report to be submitted for this project
     ├── gradient_descent_examples.ipynb
     ├── logistic_regression.py
     ├── main.py
